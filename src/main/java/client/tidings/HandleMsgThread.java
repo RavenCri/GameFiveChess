@@ -86,6 +86,7 @@ public class HandleMsgThread extends Thread{
 			
 			ChessBoard.jt.append("系统："+ChessBoard.gamepanel.dateFormat.format(new Date())+"\r\n"+"   "+ChessBoard.gamepanel.gameplayer2.getNickName()+"离开了房间\n");
 			ChessBoard.gamepanel.gameplayer2 = null;
+			GamePlane.chessBoard.RoomType = "CreateRoom";
 			ChessBoard.gamepanel.repaint();
 			
 		}else if(msgType.equals("RoomMessage")){
@@ -105,9 +106,10 @@ public class HandleMsgThread extends Thread{
 				Room.roomList = JSONObject.parseObject(msgData).getJSONArray("rooms");
 			}
 			Room.roomPlane.removeMouseListener(RoomPlane.mous);
-			Room.roomPlane.repaint();
 			//不要忘记这里的清空 不然鼠标监听器没效果
 			RoomPlane.hasplayer.clear();
+			Room.roomPlane.repaint();
+			
 			
 			RoomPlane.mous = new MouseAdapterOfRoomPlane(Room.roomPlane);
 			Room.roomPlane.addMouseListener(RoomPlane.mous);

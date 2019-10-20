@@ -126,7 +126,8 @@ public class ChessBoard extends JFrame {
 				//chatPlane.add(jt);
 				chatPlane.add(send);
 				chatPlane.add(sendtext);
-				jt.setForeground(new Color(180, 143, 160));
+				jt.setForeground(new Color(	0,250,154));
+				
 				jt.append("系统："+gamepanel.dateFormat.format(new Date())+"\n"+"   欢迎加入游戏厅，希望来到这里能给你带来快乐，与室友一起组队开黑吧~~\n");	
 				
 				send.addActionListener(new ActionListener() {
@@ -137,8 +138,10 @@ public class ChessBoard extends JFrame {
 							JOptionPane.showMessageDialog(parFrame, "不要发送空消息~~");
 							return;
 						}
-					
-						GameRoomUtil.SendMsgToServer(GamePlane.chessBoard, "GameChat",sendtext.getText());
+						if(gamepanel.gameplayer2 != null) {
+							GameRoomUtil.SendMsgToServer(GamePlane.chessBoard, "GameChat",sendtext.getText());
+						}
+						
 						
 						if(sendtext.getText().contains("快点")) {
 							GameRoomUtil.palyothermusic("source/flowerdie.mp3");
@@ -228,6 +231,10 @@ class WindowEvent implements WindowListener{
 			if(i==0) {
 				
 				GameRoomUtil.SendMsgToServer(chessBoard.parFrame,"BreakGame",null);
+				ChessBoard.gamepanel.gameplayer2 = null;
+				ChessBoard.gamepanel.zhunbei = false;
+				ChessBoard.gamepanel.kaishi = false;
+				ChessBoard.gamepanel.chessPoint.clear();
 				
 			}else {
 				return;
@@ -238,9 +245,9 @@ class WindowEvent implements WindowListener{
 			
 			GameRoomUtil.SendMsgToServer(chessBoard,"LeaveRoom",null);
 			
-			chessBoard.setVisible(false);
+			//chessBoard.setVisible(false);
 			chessBoard.dispose();
-			chessBoard.parFrame.setVisible(true);
+			LoginFream.room.setVisible(true);
 			GameRoomUtil.stopmusic();//停止播放音乐
 			ChessBoard.jt.setText("");
 			ChessBoard.gamepanel.gameplayer2 = null;

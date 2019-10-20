@@ -57,7 +57,7 @@ public class HandleMsg implements Runnable{
 					msgJson = JSONObject.parseObject(resMsg);
 					System.out.println(msgJson);
 					if(msgJson == null || msgJson.equals("{}")) {
-						LingoutChessBordRoom(gameRoom.getUserBuffer1());
+						LingoutChessBordRoom();
 						break;
 					}
 				} catch (Exception e) {
@@ -116,7 +116,7 @@ public class HandleMsg implements Runnable{
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "ChessBorldLocation",msgData);	
 				}else if(msgType.equals("LeaveRoom")) {
 								
-					LingoutChessBordRoom(gameRoom.getUserBuffer1());
+					LingoutChessBordRoom();
 					
 					//游戏开始
 				}else if (msgType.equals("GameBegin")) {
@@ -147,7 +147,7 @@ public class HandleMsg implements Runnable{
 				}else if(msgType.equals("CloseGameRoom")) {
 				
 					sendMsgToPlayer(gameRoom.getUserBuffer1(), "CloseGameRoom",null);
-					LingoutChessBordRoom(gameRoom.getUserBuffer1());
+					LingoutChessBordRoom();
 					break;
 				}else if (msgType.equals("CloseLingoutGameRoom")) {
 					Iterator<UsersBuffer> iterator = OnlineManage.onlineUsers.iterator();
@@ -214,20 +214,23 @@ public class HandleMsg implements Runnable{
 		bWriter.write(sendJSON.toJSONString()+"\r\n");
 		bWriter.flush();	
 	}
-	public  void LingoutChessBordRoom(UsersBuffer usersBuffer){
+	public  void LingoutChessBordRoom( ){
 
 		
 		Iterator<GameRoom> iterator = OnlineManage.Rooms.iterator();
+		UsersBuffer curr = null;
 		while (iterator.hasNext()) {
+			
 			GameRoom room = iterator.next();
 			//如果房间是自己创建的。
 			if(room.getUserBuffer1() == gameRoom.getUserBuffer1()) {
 				
 				//如果房间还有人，那么让他当房主。
 				if(room.getUserBuffer2() != null) {
-					room.setUserBuffer1(room.getUserBuffer2());
+					curr = room.getUserBuffer2();
+					iterator.remove();
 					sendMsgToPlayer(room.getUserBuffer2(), "LeaveRoom",null);
-					room.setUserBuffer2(null);
+					
 					
 				}else {
 					//没有人直接删除该房间。
@@ -241,8 +244,10 @@ public class HandleMsg implements Runnable{
 			}
 			
 		}
+		if(curr != null)
+			OnlineManage.Rooms.add(new GameRoom(curr));
 		gameRoom.setUserBuffer2(null);
-		// 发送玩家下线。
+		
 		sendToAllPlayersRoomList();
 	
 		
@@ -255,7 +260,7 @@ public class HandleMsg implements Runnable{
 				sendMsgToPlayer(gameRoom.getUserBuffer2(), "BreakGame", null);
 				
 			}
-			LingoutChessBordRoom(gameRoom.getUserBuffer1());
+			LingoutChessBordRoom();
 			
 			OnlineManage.onlineUsers.remove(gameRoom.getUserBuffer1());
 			

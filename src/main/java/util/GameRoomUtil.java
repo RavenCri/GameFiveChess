@@ -53,13 +53,16 @@ public class GameRoomUtil {
 		return sengJSON;
 	}
 	public static void SendMsgToServer(JFrame jFrame,String msgtype,String msg){
+		
 		try {
 			JSONObject send = GameRoomUtil.getSendJSON(msgtype,msg);
 			BeginWindow.out.write(send+"\r\n");
 			BeginWindow.out.flush();
+			System.out.println("发送："+send.toJSONString());
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(jFrame, "您可能已经与服务器断开了连接。。");
 			jFrame.setVisible(false);
+			jFrame.dispose();
 			GameClient.beginWindow.setVisible(true);
 			
 		}
