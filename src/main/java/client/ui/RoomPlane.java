@@ -1,4 +1,4 @@
-package com.raven.main;
+package client.ui;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -12,27 +12,39 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import client.GameClient;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+import client.start.GameClient;
+import client.window.BeginWindow;
+import client.window.Room;
+import javazoom.jl.player.JavaSoundAudioDevice;
 import util.GameRoomUtil;
 
 public class RoomPlane extends JPanel{
 	
 	private static final long serialVersionUID = 1L;
-	Room room;
+	public  Room room;
+	
 	int rectwidth = 180;
 	int rectheight = 60;
 	int indexpage = 0;
 	int lastpage = 0;
 	int currpage = 0;
-	public static MouseThing mous;
+	public static MouseAdapterOfRoomPlane mous;
 	public boolean hide =false;
 	// 坑爹 的boolean不初始化就是空指针！！！
 	Boolean mousedown = false;
+	static ImageIcon bgImg = new ImageIcon("source/bkImg.jpg");
 	int lasty = 150;
 	Map<String,String> nameMap = new HashMap<String,String>();
 	/**
@@ -47,16 +59,13 @@ public class RoomPlane extends JPanel{
 	public static List<String> hasplayer = new ArrayList<String>();
 	
 	public RoomPlane() {
-		
-		mous = new MouseThing(this);
+		mous = new MouseAdapterOfRoomPlane(this);
 		addMouseListener(mous);
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseMoved(MouseEvent e) {
 				p = e.getPoint();
-				
 				repaint();	
 			}
-			
 		});
 		
 	}
@@ -69,52 +78,49 @@ public class RoomPlane extends JPanel{
 		Graphics2D g2 = bi.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);  
 		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,RenderingHints.VALUE_STROKE_DEFAULT); 
-		g2.drawImage(MyPlane.bgImg.getImage(), 0, 0,  800, 800, MyPlane.bgImg.getImageObserver());
+		g2.drawImage(bgImg.getImage(), 0, 0,  800, 800, bgImg.getImageObserver());
 		g2.setColor(Color.green);
 		int index = 0;
-		
-		if(GameClient.MSG==null||GameClient.MSG.equals("")) {
-			g2.setFont(new Font("黑体", Font.BOLD, 30));
+		if(Room.emptyRoom) {
+			g2.setFont(new Font("黑体", Font.BOLD, 20));
 			g2.setColor(Color.PINK);
-			g2.drawString("亲爱的："+BeginWindow.nickName+",当前暂无房间~", 150, 100);
+			g2.drawString("亲爱的："+BeginWindow.userPlayer.getNickName()+",当前服务器暂无玩家创建房间,你可以创建房间哦~", 60, 100);
 		}else {
 			
 			g2.setFont(new Font("楷体", Font.PLAIN, 22));
 			
-			g2.drawString("亲爱的："+BeginWindow.nickName+",以下是当前服务器房间列表~：", 150, 40);
+			g2.drawString("亲爱的："+BeginWindow.userPlayer.getNickName()+",以下是当前服务器房间列表~：", 150, 40);
 			g2.setColor(Color.black);
 			g2.drawString("当前是第："+(currpage+1)+"页,共有"+lastpage+"页。", 220, 750);
-			List<String> m = Arrays.asList(GameClient.MSG.split("&"));
+			JSONArray  roomlist = Room.roomList;
+			
 			//5个房间为一页
-			int last = m.size()%5;
+			int last = roomlist.size()%5;
 					
 			if(last==0) {
-				lastpage = m.size()/5;
+				lastpage = roomlist.size()/5;
 			}else {
-				lastpage = m.size()/5+1;
+				lastpage = roomlist.size()/5+1;
 			}
-			// 昵称%账号,昵称%账号&昵称%账号,昵称%账号
+			
+			
 			for(int i = 0;i<5;i++) {
-				if(i+(currpage*5)>m.size()-1)break;
-				String[] plays = m.get(i+(currpage*5)).split(",");
+				if(i+(currpage*5)>roomlist.size()-1)break;
+				JSONArray roomJSON= roomlist.getJSONArray((i+(currpage*5)));
+				JSONObject gamePlay1 =  (JSONObject) roomJSON.get(0);
 				
-				String play1 = plays[0].split("%")[1];
-				//因为房间有可能只有房主 所以这里默认为null
-				String play2 ="null";
-				if(plays.length==2) {
-					play2 = plays[1].split("%")[1];
-				}
-
+			
 				index++;
 				Y = 80*index;
 				g2.setFont(new Font("楷体", Font.BOLD, 25));
 				g2.drawImage(Room.man.getImage(), 100, Y, Room.man.getImageObserver());
 				g2.setColor(Color.red);
-				g2.drawString(play1, 100, Y+60);
+				g2.drawString(gamePlay1.getString("nickName"), 100, Y+60);
 				g2.drawImage(Room.chessWhite.getImage(), 250, Y+20, 40,40,this);
-				if(!play2.equals("null")) {
+				if(roomJSON.size() > 1) {
+					JSONObject gamePlay2 =  (JSONObject) roomJSON.get(1);
 					g2.drawImage(Room.women.getImage(), 400, Y, 40,40,this);
-					g2.drawString(play2, 400, Y+60);
+					g2.drawString(gamePlay2.getString("nickName"), 400, Y+60);
 					hasplayer.add("1");
 				}else {
 					g2.drawString("加入该对局", 400, Y+40);
@@ -123,7 +129,7 @@ public class RoomPlane extends JPanel{
 				}
 				g2.setColor(Color.BLUE);
 				g2.drawLine(0, Y+70, this.getWidth(), Y+70);
-				nameMap.put(""+(index-1), plays[0]);
+				nameMap.put(""+(index-1), gamePlay1.getString("userName"));
 			}
 			lasty = 100*(index+1);
 			g2.setColor(Color.red);
@@ -146,7 +152,7 @@ public class RoomPlane extends JPanel{
 		 *  	更好的不是放在paint方法里 而是放入 刷新房间点击事件里 如果房间信息改变 那么重新构造新的监听器 这样写 太不好了 
 		 */
 		
-		
-		
 	}
+
+	
 }

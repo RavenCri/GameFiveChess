@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Map;
+
+import org.apache.catalina.util.URLEncoder;
 
 public class HttpConnectUtil {
 		public static String requestHTTP(String host,Map<String,String> map,String type){
@@ -13,8 +16,8 @@ public class HttpConnectUtil {
 			if(map!=null) {
 				param.append("?");
 				for(Map.Entry<String, String> entry: map.entrySet()) {
-					
-					param.append(entry.getKey()+"="+entry.getValue()+"&");
+					String valencode = new URLEncoder().encode(entry.getValue(), Charset.forName("utf-8"));
+					param.append(entry.getKey()+"="+valencode+"&");
 					
 				}
 				param.deleteCharAt(param.length()-1);

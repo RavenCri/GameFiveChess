@@ -1,4 +1,4 @@
-package com.raven.main;
+package client.window;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -28,11 +28,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-
-import com.computer.ComputerGame;
-
-import client.GameClient;
-import client.LoginFream;
+import bean.User;
+import client.computer.ComputerGame;
+import client.start.GameClient;
 import util.GameRoomUtil;
 /**
  * 
@@ -52,14 +50,11 @@ public class BeginWindow extends JFrame{
 	static public BufferedReader in;
 	// 判断当前是否播放音乐。
 	public static boolean bofang;
-	//自己的名字
-	public static String username = null;
-	public static String nickName = null;
-	public static int gamebout = 0;
-	public static double winlv = 0;
+	
+	public static User userPlayer;
 	static public Socket socket = null;
 	public boolean loginstaus = false;
-	MyPlane myplane;
+	public MyPlane myplane;
 	//static public Room room;
 	public BeginWindow(){
 		setSize(530,700);
@@ -283,20 +278,20 @@ class MyPlane extends JPanel implements MouseListener{
 		GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
 		//System.out.println("人机窗口！！");
 		//隐藏该窗口 创建人机窗口
-		if(beginWindow.username==null) {
-			beginWindow.username = JOptionPane.showInputDialog("给您起一个个性的名称吧~");
-			if(beginWindow.username==null) {
+		if(BeginWindow.userPlayer==null) {
+			BeginWindow.userPlayer.setUserName(JOptionPane.showInputDialog("给您起一个个性的名称吧~")); 
+			if(BeginWindow.userPlayer==null) {
 				return;
 			}
 		}
 			
 		
-		if(beginWindow.username.equals("")) {
-			beginWindow.username =null;
+		if(BeginWindow.userPlayer.getUserName().equals("")) {
+			
 			JOptionPane.showMessageDialog(beginWindow, "名字不能为空哦。");
 			return;
 		}
-		new ComputerGame(beginWindow, beginWindow.username.trim(),AlgLeave);
+		new ComputerGame(beginWindow, BeginWindow.userPlayer.getUserName(),AlgLeave);
 		beginWindow.setVisible(false);
 		
 		repaint();

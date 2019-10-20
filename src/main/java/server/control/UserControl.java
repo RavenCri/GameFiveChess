@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
+
 import bean.User;
 import server.service.UserServer;
 
@@ -49,14 +51,23 @@ public class UserControl {
 	
 	@RequestMapping("/login")
 	@ResponseBody
-	public String login(User user) {
+	public Object login(User user) {
 		
-		User user2 = userServer.userLogin(user);
-		if(user2!=null) {
-			return "登陆成功:"+user2.getNickName()+":"+user2.getUserName()+":"+user2.getWiningProbability()+":"+user2.getGameBout();
+		User userInfo = userServer.userLogin(user);
+		
+
+		JSONObject res = new JSONObject();
+		String status;
+		if(userInfo!=null) {
+			userInfo.setPassWord("");
+			res.put("info",userInfo);
+			status = "true";
 		}else {
-			return "账号不存在或者密码错误!";
+			status = "false";
 		}
+		res.put("status", status);
+		
+		return res;
 	}
 	@RequestMapping("/update")
 	@ResponseBody

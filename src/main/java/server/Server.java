@@ -8,10 +8,13 @@ import java.util.concurrent.Executors;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.raven.main.ConnectTomsg;
-import com.raven.main.GameRoom;
+import server.handlemsg.HandleMsg;
 /**
  * 
  * @author Raven
@@ -24,7 +27,7 @@ import com.raven.main.GameRoom;
 public class Server implements Runnable{
 	static ServerSocket serverSocket;
 	static ExecutorService pool= Executors.newFixedThreadPool(50);
-	public static GameRoom gameRoom = new GameRoom();
+
 	public static void main(String[] args) {
 	
 			SpringApplication.run(Server.class, args);
@@ -44,7 +47,7 @@ public class Server implements Runnable{
 			//new Thread(new Server()).start();
 			while(true) {
 				Socket socket = serverSocket.accept();
-				pool.execute(new ConnectTomsg(socket));
+				pool.execute(new HandleMsg(socket));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

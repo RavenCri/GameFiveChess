@@ -1,4 +1,4 @@
-package client;
+package client.window;
 
 import java.awt.Color;
 import java.awt.Desktop;
@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sound.midi.MidiDevice.Info;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -35,9 +36,10 @@ import javax.swing.JTextField;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.raven.main.BeginWindow;
-import com.raven.main.Room;
+import com.alibaba.fastjson.JSONObject;
 
+import bean.User;
+import client.tidings.ReceiveMsgThread;
 import util.GameRoomUtil;
 import util.HttpConnectUtil;
 
@@ -47,21 +49,22 @@ public class LoginFream extends JFrame{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	JCheckBox realizePassWorld;
+	private JCheckBox realizePassWorld;
 	boolean flag=false;
-	JLabel jl = new JLabel("账号：");
-	JLabel jl2 = new JLabel("密码：");
-	JTextField textfield=new JTextField("请输入您的账号....",30);
-	JPasswordField textfield2=new JPasswordField();
-	JButton loninButton ,regignButt;
-	JLabel bg;
-	JPanel panel=new JPanel();
+	private JLabel jl = new JLabel("账号：");
+	private JLabel jl2 = new JLabel("密码：");
+	private JTextField textfield=new JTextField("请输入您的账号....",30);
+	private JPasswordField textfield2=new JPasswordField();
+	private JButton loninButton ,regignButt;
+	private JLabel bg;
+	private JPanel panel=new JPanel();
 	
-	Icon loginIcon ;
+	private Icon loginIcon ;
 	public boolean exit;
 	public LoginFream() {
 		
 	}
+	public static Room room;
 	public LoginFream(BeginWindow bWindow){
 		super("登录界面");
 		SiteInit(this,500,400);
@@ -147,36 +150,52 @@ public class LoginFream extends JFrame{
 				new Thread() {
 					public void run() {
 						
-						String staus[] = HttpConnectUtil.requestHTTP(BeginWindow.host+"/login",msg,"get").split(":");
+						String reqStr = HttpConnectUtil.requestHTTP(BeginWindow.host+"/login",msg,"get");
 						
-						
-						if(staus[0].contains("登陆成功")) {
-							System.out.println(staus[0]+"--"+staus[1]+"--"+staus[2]+"--"+staus[3]+"--"+staus[4]);
-							try {
-								BeginWindow.out = new BufferedWriter(new OutputStreamWriter(BeginWindow.socket.getOutputStream(),"UTF-8"));
-								BeginWindow.in = new BufferedReader(new InputStreamReader(BeginWindow.socket.getInputStream(),"UTF-8"));
-								GameRoomUtil.SendToServerMsg(bWindow, "MSGTYPE:username#"+staus[2]+"%"+staus[1]+"\r\n");	
-								GameRoomUtil.ResultMsg();
+						try {
+							JSONObject res =   (JSONObject) JSONObject.parse(reqStr);
+							System.out.println(res.get("info"));
+							User loginUser = (User) JSONObject.toJavaObject(res.getJSONObject("info"), User.class);
+							// 如果登录成功
+							if("true".equals(res.get("status"))) {
 								
-								BeginWindow.nickName = staus[1];
-								BeginWindow.username = staus[2];
-								BeginWindow.winlv = Double.valueOf(staus[3]);
-								BeginWindow.gamebout = Integer.valueOf(staus[4].trim());
-								Room room = new Room(bWindow);
-								room.setVisible(true);
-								bWindow.loginstaus =true;
-								dispose();
-							} catch (UnsupportedEncodingException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+								try {
+									BeginWindow.out = new BufferedWriter(new OutputStreamWriter(BeginWindow.socket.getOutputStream(),"UTF-8"));
+									BeginWindow.in = new BufferedReader(new InputStreamReader(BeginWindow.socket.getInputStream(),"UTF-8"));
+									// 发送登录状态 同时获取了游戏房间列表
+									GameRoomUtil.SendMsgToServer(bWindow, "LoginGame",res.getString("info"));	
+									JSONObject resJSON =  ReceiveMsgThread.ReceiveMSg();
+									String msgType = resJSON.getString("msgType");
+									String msg = resJSON.getString("msg");
+									if(msgType.equals("AlreadyLogined") && msg.equals("0") ) {
+										
+										BeginWindow.userPlayer = loginUser;
+										room = new Room(bWindow);
+										room.setVisible(true);
+										bWindow.loginstaus =true;
+										dispose();
+									}else {
+										JOptionPane.showMessageDialog(null, "您的账号真的已经登录过了。如果非你本人操作，请修改密码！");
+									}
+									
+								
+								} catch (UnsupportedEncodingException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							}else {
+								
+								JOptionPane.showMessageDialog(null, "账号密码错误，要不先注册个吧~");
 							}
-						}else {
-							System.out.println(staus[0]);
-							JOptionPane.showMessageDialog(null, "账号密码错误，要不先注册个吧~");
+						} catch (Exception e) {
+							JOptionPane.showMessageDialog(null, "登录信息异常。。");
+							e.printStackTrace();
 						}
+						
+						
 						
 					};
 				}.start();

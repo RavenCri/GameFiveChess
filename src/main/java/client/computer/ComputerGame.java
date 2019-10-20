@@ -1,4 +1,4 @@
-package com.computer;
+package client.computer;
 
 
 
@@ -40,8 +40,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import com.raven.main.BeginWindow;
-import com.raven.main.Room;
+
+import client.window.BeginWindow;
+import client.window.Room;
 import util.GameRoomUtil;
 
 

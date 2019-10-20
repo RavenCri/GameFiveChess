@@ -6,6 +6,7 @@ public class User {
 	private String nickName;
 	private double winingProbability;
 	private int gameBout;
+	private int winBout;
 	public User() {
 		
 	}
@@ -39,6 +40,13 @@ public class User {
 	public void setGameBout(int gameBout) {
 		this.gameBout = gameBout;
 	}
+	
+	public int getWinBout() {
+		return winBout;
+	}
+	public void setWinBout(int winBout) {
+		this.winBout = winBout;
+	}
 	public User(String userName, String passWord, String nickName) {
 		super();
 		this.userName = userName;
@@ -53,5 +61,10 @@ public class User {
 		this.winingProbability = winingProbability;
 		this.gameBout = gameBout;
 	}
-
+	public void setWinBoutAddOne() {
+		this.winBout++;
+	}
+	public void setGameBoutAddOne() {
+		this.gameBout++;
+	}
 }

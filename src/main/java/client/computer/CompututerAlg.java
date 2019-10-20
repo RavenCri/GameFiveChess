@@ -1,4 +1,4 @@
-package com.computer;
+package client.computer;
 
 import java.awt.Point;
 

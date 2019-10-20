@@ -1,4 +1,4 @@
-package com.raven.main;
+package client.window;
 
 
 
@@ -39,7 +39,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import client.GameClient;
+import bean.User;
+import client.start.GameClient;
+import client.ui.GamePlane;
 import util.GameRoomUtil;
 
 
@@ -55,14 +57,14 @@ public class ChessBoard extends JFrame {
 	public String RoomType;
 	public Room parFrame;
 	public static GamePlane gamepanel =new GamePlane();
-	JSplitPane chatPlane;
+	public JSplitPane chatPlane;
 	public static JTextArea jt  = new JTextArea();
-	JScrollPane jscroll ;
+	public JScrollPane jscroll ;
 	
 	public ChessBoard() {
 		
 	}
-	public ChessBoard(Room parFrame,String RoomType,String username) {
+	public ChessBoard(Room parFrame,String RoomType,User gamePlayer) {
 				setLayout(null);
 				
 				//设置标题
@@ -85,10 +87,7 @@ public class ChessBoard extends JFrame {
 				
 				
 				gamepanel.setChessBoard(this);
-				gamepanel.setGameplayer1(username);
-				gamepanel.setMyPlayGamenum(BeginWindow.gamebout);
-				GamePlane.setMYWINLV(BeginWindow.winlv);
-				gamepanel.setMyplayGamewinnum((int)(BeginWindow.gamebout*BeginWindow.winlv));
+				gamepanel.setGameplayer1(gamePlayer);
 				gamepanel.setLocation(0, 0);
 				gamepanel.setSize(ChessBoardWidth-500, ChessBoardHeight);
 				
@@ -139,7 +138,7 @@ public class ChessBoard extends JFrame {
 							return;
 						}
 					
-						GameRoomUtil.SendToServerMsg(gamepanel.chessBoard, "MSGTYPE:GAMECHAT#"+sendtext.getText()+"\r\n");
+						GameRoomUtil.SendMsgToServer(GamePlane.chessBoard, "GameChat",sendtext.getText());
 						
 						if(sendtext.getText().contains("快点")) {
 							GameRoomUtil.palyothermusic("source/flowerdie.mp3");
@@ -153,7 +152,7 @@ public class ChessBoard extends JFrame {
 							gamepanel.musicing = true;
 						}
 						
-						jt.append(gamepanel.gameplayer1+"："+gamepanel.dateFormat.format(new Date())+"\n"+"   "+sendtext.getText()+"\n");
+						jt.append(gamepanel.gameplayer1.getNickName()+"："+gamepanel.dateFormat.format(new Date())+"\n"+"   "+sendtext.getText()+"\n");
 						sendtext.setText("");
 						//最下方
 						jt.setCaretPosition(jt.getDocument().getLength());
@@ -228,7 +227,7 @@ class WindowEvent implements WindowListener{
 			int i = JOptionPane.showConfirmDialog(chessBoard, "当前游戏已经开始，退出游戏你将输掉比赛，确认退出游戏？","确认退出？",2);
 			if(i==0) {
 				
-				GameRoomUtil.SendToServerMsg(chessBoard.parFrame,"MSGTYPE:BreakGame\r\n");
+				GameRoomUtil.SendMsgToServer(chessBoard.parFrame,"BreakGame",null);
 				
 			}else {
 				return;
@@ -236,23 +235,19 @@ class WindowEvent implements WindowListener{
 		}
 		
 		if(chessBoard.RoomType.equals("CreateRoom")||chessBoard.RoomType.equals("ADDRoom")) {
-			String msg = "";
-			if(ChessBoard.gamepanel.gameplayer2.equals("")) {
-				msg  = "MSGTYPE:LingoutGameNowPerson#0\r\n";
-			}else {
-				msg  = "MSGTYPE:LingoutGameNowPerson#1\r\n";
-			}
-			GameRoomUtil.SendToServerMsg(chessBoard,msg);
-			chessBoard.parFrame.setVisible(true);
+			
+			GameRoomUtil.SendMsgToServer(chessBoard,"LeaveRoom",null);
+			
+			chessBoard.setVisible(false);
 			chessBoard.dispose();
+			chessBoard.parFrame.setVisible(true);
 			GameRoomUtil.stopmusic();//停止播放音乐
 			ChessBoard.jt.setText("");
-			ChessBoard.gamepanel.gameplayer2 = "";
+			ChessBoard.gamepanel.gameplayer2 = null;
 			ChessBoard.gamepanel.zhunbei = false;
 			ChessBoard.gamepanel.kaishi = false;
 			ChessBoard.gamepanel.chessPoint.clear();
-			BeginWindow.winlv = GamePlane.MYWINLV;
-			BeginWindow.gamebout = GamePlane.MyPlayGamenum;
+		
 
 		}
 
@@ -286,90 +281,3 @@ class WindowEvent implements WindowListener{
 	}
 }
 
-class xiaqiThread extends Thread{
-	GamePlane gmplane;
-	MouseEvent e;
-	public xiaqiThread(GamePlane chessBoard, MouseEvent e) {
-		this.gmplane = chessBoard;
-		this.e = e;
-	}
-
-	@Override
-	public void run() {
-		
-		if(gmplane.isme) {
-			
-			Point p = e.getPoint();
-			if(gmplane.MouseAtChess) {
-				if(!gmplane.kaishi) {
-					JOptionPane.showMessageDialog(gmplane, "游戏还未开始您不能落子");
-					return;
-				}
-				if(gmplane.chessPoint.size()==0&&GamePlane.MyChessColorINT==1) {
-					JOptionPane.showMessageDialog(gmplane, "黑方先手~~");
-					return;
-					
-				}
-				double x = (p.getX()-430)/45;
-				double y = (p.getY()-110)/45;
-				GamePlane.rx = (int)x;
-				GamePlane.ry =(int)y;
-				String xstr = Double.toString(x);
-				String ystr = Double.toString(y);
-				char xd = xstr.charAt(xstr.indexOf(".")+1);
-				char yd = ystr.charAt(ystr.indexOf(".")+1);
-				if(xd-'0'>5) {
-					GamePlane.rx += 1;
-				}
-				if(yd-'0'>5) {
-					GamePlane.ry +=1;
-				}
-				//System.out.println(chessBoard.rx+"..."+chessBoard.ry);
-				//如果点在棋盘上
-				if(!(GamePlane.rx>=0&&GamePlane.rx<=14&&GamePlane.ry>=0&&GamePlane.ry<=14)) {
-					return;
-				}
-				if(gmplane.allChess[GamePlane.rx][GamePlane.ry] !=0) {
-					System.out.println("一定落子了");
-					return;
-				}
-				// 白1黑2
-				if(GamePlane.MyChessColor.equals("white")) {
-					gmplane.allChess[GamePlane.rx][GamePlane.ry] =1;
-				}else {
-					gmplane.allChess[GamePlane.rx][GamePlane.ry] =2;
-				}
-				GameRoomUtil.palyothermusic("source/mousedown.mp3");
-				gmplane.chessPoint.add(GamePlane.MyChessColor+","+(GamePlane.rx*45+430)+","+(GamePlane.ry*45+110));
-				gmplane.isme = false;
-				
-				
-		
-				System.out.println(GamePlane.rx+"..."+GamePlane.ry);
-				GameRoomUtil.SendToServerMsg(GamePlane.chessBoard,"MSGTYPE:ChessGameing#"+GamePlane.MyChessColor+","+GamePlane.rx+","+gmplane.ry+"\r\n");
-			
-				
-				//判断是否赢了比赛
-				boolean iswin = gmplane.checkwin();
-				if(iswin) {
-					System.out.println("你赢了啊！！！");
-					GameRoomUtil.SendToServerMsg(GamePlane.chessBoard,"MSGTYPE:ChessGameing#GameWIN"+"\r\n");
-					JOptionPane.showMessageDialog(gmplane, "你赢得了比赛！！");
-					ChessBoard.jt.append("系统："+gmplane.dateFormat.format(new Date())+"\n   你赢得了比赛！！\n");
-					GamePlane.MyplayGamewinnum = (int) (GamePlane.MyPlayGamenum*GamePlane.MYWINLV);
-					GamePlane.HisplayGamewinnum = (int) (GamePlane.HisPlayGamenum*GamePlane.HisWINLV);
-					GamePlane.MyplayGamewinnum++;
-					gmplane.GameWinAfter(gmplane);
-					GameRoomUtil.palyothermusic("source/winmusic.mp3");
-				}
-				gmplane.repaint();
-			
-				
-			}
-			
-			
-				
-		}
-	}
-
-}
