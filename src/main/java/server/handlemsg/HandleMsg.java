@@ -161,6 +161,8 @@ public class HandleMsg implements Runnable{
 					break;
 				}else if (msgType.equals("RoomMessage")) {
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "RoomMessage", msgData);	
+				}else if (msgType.equals("YouLose")) {
+					sendMsgToPlayer(gameRoom.getUserBuffer2(), "YouLose", msgData);	
 				}
 				
 			} catch (IOException e) {	

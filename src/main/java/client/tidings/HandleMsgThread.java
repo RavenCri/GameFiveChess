@@ -146,6 +146,12 @@ public class HandleMsgThread extends Thread{
 			
 			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
 			GameRoomUtil.palyothermusic("source/winmusic.mp3");
+		}else if (msgType.equals("YouLose")) {
+			
+			JOptionPane.showMessageDialog(null, "你输了比赛哦~");
+			ChessBoard.gamepanel.gameplayer2.setWinBoutAddOne();
+			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
+			
 		}else if(msgType.equals("ChessBorldLocation")) {
 			String ChessBorldLocation[] = msgData.split(",");
 			GamePlane.rx = Integer.parseInt(ChessBorldLocation[1]);
@@ -163,14 +169,7 @@ public class HandleMsgThread extends Thread{
 				
 				ChessBoard.gamepanel.allChess[x][y] = 2;
 			}
-			if(ChessBoard.gamepanel.checkwin()) {
-				JOptionPane.showMessageDialog(null, "你输了比赛哦~");
-				ChessBoard.gamepanel.gameplayer2.setWinBoutAddOne();
-				ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
-			}else {
-				
-				ChessBoard.gamepanel.isme = true;
-			}
+			ChessBoard.gamepanel.isme = true;
 		}else if (msgType.equals("AdmitDefeat")) {
 			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方认输了，你很棒哦");
 			ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();

@@ -296,7 +296,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 		if (e.getX()>=510&&e.getX()<=630&&e.getY()>=820-40&&e.getY()<=880-40) {
 			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
 			if(!kaishi) {
-				JOptionPane.showMessageDialog(this, "游戏还没有开始~不可以认输哦","false",2);
+				JOptionPane.showMessageDialog(this, "游戏还没有开始~不可以认输","false",2);
 				return;
 			}
 			int i =JOptionPane.showConfirmDialog(this, "你确定要认输吗","认输",2);
@@ -729,11 +729,12 @@ class xiaqiThread extends Thread{
 				//判断是否赢了比赛
 				boolean iswin = gmplane.checkwin();
 				if(iswin) {
-					
+					GameRoomUtil.SendMsgToServer(GamePlane.chessBoard, "YouLose", null);
 					JOptionPane.showMessageDialog(gmplane, "你赢得了比赛！！");
 					ChessBoard.jt.append("系统："+gmplane.dateFormat.format(new Date())+"\n   你赢得了比赛！！\n");
 					gmplane.gameplayer1.setWinBoutAddOne();
 					gmplane.GameWinAfter(gmplane);
+					
 					GameRoomUtil.palyothermusic("source/winmusic.mp3");
 				}
 				gmplane.repaint();
