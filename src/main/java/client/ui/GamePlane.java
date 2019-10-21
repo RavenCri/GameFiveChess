@@ -302,7 +302,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 			int i =JOptionPane.showConfirmDialog(this, "你确定要认输吗","认输",2);
 			if(i==0) {
 				GameRoomUtil.SendMsgToServer(chessBoard, "AdmitDefeat",null);
-				gameplayer2.setGameBoutAddOne();;
+				gameplayer2.setWinBoutAddOne();
 				GameWinAfter(this);		
 			}
 		
@@ -332,7 +332,12 @@ public class GamePlane extends JSplitPane implements MouseListener{
 				return;
 			}
 			int i =JOptionPane.showConfirmDialog(this, "你确定要和棋吗","和棋",2);
-			if(i==0)GameRoomUtil.SendMsgToServer(chessBoard, "heqi",null);
+			if(i==0) {
+				gameplayer1.setWinBoutAddOne();
+				gameplayer2.setWinBoutAddOne();
+				GameRoomUtil.SendMsgToServer(chessBoard, "heqi",null);
+				GameWinAfter(this);	
+			}
 			
 		}else if (e.getX()>=650&&e.getX()<=830&&e.getY()>=80-40&&e.getY()<=140-40) {
 			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
@@ -415,12 +420,15 @@ public class GamePlane extends JSplitPane implements MouseListener{
 	public  void GameWinAfter(GamePlane gamepanel) {
 		gamepanel.isme = true;
 		gameplayer1.setGameBoutAddOne();
-		gameplayer2.setGameBoutAddOne();
+		if(gameplayer2 != null) {
+			gameplayer2.setGameBoutAddOne();
+		}
+		
 		zhunbei = false;
 		kaishi = false;
 		isme = true;
-		//System.out.println("当前他的总局数："+gameplayer2.getGameBout()+"对方赢的局数："+gameplayer2.getWinBout());
-		//System.out.println("当前你的总局数："+gameplayer1.getGameBout()+"你赢的局数："+gameplayer1.getWinBout());
+		System.out.println("当前他的总局数："+gameplayer2.getGameBout()+"对方赢的局数："+gameplayer2.getWinBout());
+		System.out.println("当前你的总局数："+gameplayer1.getGameBout()+"你赢的局数："+gameplayer1.getWinBout());
 		gameplayer1.setWiningProbability((double)gameplayer1.getWinBout()/gameplayer1.getGameBout());
 		gameplayer2.setWiningProbability((double)gameplayer2.getWinBout()/gameplayer2.getGameBout());
 		
@@ -444,9 +452,11 @@ public class GamePlane extends JSplitPane implements MouseListener{
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("userName", gameplayer1.getUserName());
 				map.put("winingProbability", gameplayer1.getWiningProbability()+"");
+				map.put("winBout", gameplayer1.getWinBout()+"");
 				map.put("gameBout", gameplayer1.getGameBout()+"");
 				String stau= HttpConnectUtil.requestHTTP(BeginWindow.host+"/update", map, "get");
 				System.out.println(stau);
+				GameRoomUtil.SendMsgToServer(chessBoard, "updateUserInfo", null);
 			};
 		}.start();
 	}

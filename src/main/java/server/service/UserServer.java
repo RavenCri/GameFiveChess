@@ -29,5 +29,9 @@ public class UserServer {
 		return userMapper.update(user);
 		
 	}
-
+	public User getUser(String userName) {
+		User selectUser = userMapper.getUserByUserName(userName);
+		selectUser.setPassWord("");
+		return selectUser;
+	}
 }

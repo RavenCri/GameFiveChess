@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import server.handlemsg.HandleMsg;
+import server.service.UserServer;
 /**
  * 
  * @author Raven
@@ -23,11 +25,11 @@ import server.handlemsg.HandleMsg;
  * 	游戏服务端
  */
 @SpringBootApplication
-
 public class Server implements Runnable{
 	static ServerSocket serverSocket;
 	static ExecutorService pool= Executors.newFixedThreadPool(50);
-
+	@Autowired
+	public static UserServer userServer;
 	public static void main(String[] args) {
 	
 			SpringApplication.run(Server.class, args);
@@ -56,5 +58,14 @@ public class Server implements Runnable{
 		
 		
 	}
+
+	public  UserServer getUserServer() {
+		return userServer;
+	}
+	@Autowired
+	public  void setUserServer(UserServer userServer) {
+		Server.userServer = userServer;
+	}
+	
 	
 }

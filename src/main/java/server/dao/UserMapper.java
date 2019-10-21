@@ -15,9 +15,12 @@ public interface UserMapper {
 	@Select("select *from user  where userName=#{userName} and passWord=#{passWord}")
 	User userLogin(User user);
 	
-	@Update("update user set winingProbability=#{winingProbability},gameBout=#{gameBout} where userName=#{userName}")
+	@Update("update user set winingProbability=#{winingProbability},gameBout=#{gameBout},winBout=#{winBout} where userName=#{userName}")
 	int update(User user);
 	
 	@Select("select *from user  where userName=#{userName}")
 	User exituser(String userName);
+	
+	@Select("select *from user where userName=#{userName}")
+	User getUserByUserName(String userName);
 }

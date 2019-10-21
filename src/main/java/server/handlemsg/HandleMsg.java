@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.tomcat.util.security.MD5Encoder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
 import com.alibaba.fastjson.JSONArray;
@@ -22,8 +24,9 @@ import pojo.GameRoom;
 import pojo.UsersBuffer;
 import server.OnlineManage;
 import server.Server;
+import server.service.UserServer;
 import util.GameRoomUtil;
-
+@Component
 public class HandleMsg implements Runnable{
 	private Socket socket;
 	
@@ -133,7 +136,7 @@ public class HandleMsg implements Runnable{
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "BreakGame",null);
 					
 				}else if(msgType.equals("heqi")) {
-				
+					
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "heqi",msgData);
 					
 				}else if(msgType.equals("huiqi")) {
@@ -141,7 +144,7 @@ public class HandleMsg implements Runnable{
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "huiqi",msgData);
 					
 				}else if(msgType.equals("AdmitDefeat")) {
-				
+					
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "AdmitDefeat",msgData);
 					
 				}else if(msgType.equals("CloseGameRoom")) {
@@ -163,6 +166,14 @@ public class HandleMsg implements Runnable{
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "RoomMessage", msgData);	
 				}else if (msgType.equals("YouLose")) {
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "YouLose", msgData);	
+				}else if (msgType.equals("updateUserInfo")) {
+					User user = Server.userServer.getUser(gameRoom.getUserBuffer1().getUser().getUserName());
+					gameRoom.getUserBuffer1().setUser(user);
+					if(gameRoom.getUserBuffer2() != null) {
+						User user2 = Server.userServer.getUser(gameRoom.getUserBuffer2().getUser().getUserName());
+						gameRoom.getUserBuffer2().setUser(user2);
+					}
+					
 				}
 				
 			} catch (IOException e) {	

@@ -35,7 +35,7 @@ import javazoom.jl.player.Player;
 public class GameRoomUtil {
 	
 	static Player p;
-	static Thread bGThread;
+	static public Thread bGThread;
 	
 	public static JSONObject getSendJSON(String msgType, String msg) {
 		JSONObject sengJSON = new JSONObject();
@@ -130,6 +130,7 @@ public class GameRoomUtil {
 			
 			Player play = new Player(in);
 			play.play();
+			
 			BeginWindow.bofang = false;
 		} catch (FileNotFoundException e1) {
 			
@@ -172,6 +173,7 @@ public class GameRoomUtil {
 		{
 			
 			bGThread.stop();
+			
 			bGThread = null;
 		}	
 		

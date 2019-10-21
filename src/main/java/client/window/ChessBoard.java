@@ -231,6 +231,9 @@ class WindowEvent implements WindowListener{
 			if(i==0) {
 				
 				GameRoomUtil.SendMsgToServer(chessBoard.parFrame,"BreakGame",null);
+				ChessBoard.gamepanel.gameplayer2.setWinBoutAddOne();
+				ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
+				
 				ChessBoard.gamepanel.gameplayer2 = null;
 				ChessBoard.gamepanel.zhunbei = false;
 				ChessBoard.gamepanel.kaishi = false;

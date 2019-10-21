@@ -144,13 +144,14 @@ public class HandleMsgThread extends Thread{
 			
 		}else if(msgType.equals("BreakGame")) {
 			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方退出了房间，你赢的了这场比赛！");
-			ChessBoard.gamepanel.gameplayer1.setGameBout(ChessBoard.gamepanel.gameplayer1.getWinBout()+1);
+			ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();
 			
 			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
+			
 			GameRoomUtil.palyothermusic("source/winmusic.mp3");
 		}else if (msgType.equals("YouLose")) {
 			
-			JOptionPane.showMessageDialog(null, "你输了比赛哦~");
+			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "你输了比赛哦~");
 			ChessBoard.gamepanel.gameplayer2.setWinBoutAddOne();
 			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
 			
