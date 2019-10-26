@@ -85,7 +85,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 	BufferedImage Colorstaus;
 	
 	
-	public SimpleDateFormat dateFormat= new SimpleDateFormat("hh:mm:ss");
+	public static SimpleDateFormat dateFormat= new SimpleDateFormat("hh:mm:ss");
 
 	public boolean zhunbei = false;
 	public boolean kaishi = false;

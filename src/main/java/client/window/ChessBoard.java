@@ -128,7 +128,7 @@ public class ChessBoard extends JFrame {
 				chatPlane.add(sendtext);
 				jt.setForeground(new Color(	0,250,154));
 				
-				jt.append("系统："+gamepanel.dateFormat.format(new Date())+"\n"+"   欢迎加入游戏厅，希望来到这里能给你带来快乐，与室友一起组队开黑吧~~\n");	
+				jt.append("系统："+GamePlane.dateFormat.format(new Date())+"\n"+"   欢迎加入游戏厅，希望来到这里能给你带来快乐，与室友一起组队开黑吧~~\n");	
 				
 				send.addActionListener(new ActionListener() {
 					

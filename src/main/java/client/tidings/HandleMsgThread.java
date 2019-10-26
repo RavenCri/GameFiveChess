@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import bean.User;
@@ -141,6 +142,29 @@ public class HandleMsgThread extends Thread{
 			ChessBoard.jt.append(ChessBoard.gamepanel.gameplayer2.getNickName()+"："+ChessBoard.gamepanel.dateFormat.format(new Date())+"\n   "+msgData.toString()+"\n");
 			//设置总在最下方
 			ChessBoard.jt.setCaretPosition(ChessBoard.jt.getDocument().getLength());
+			
+		}else if(msgType.equals("salaChat")){
+			
+			JSONObject msg = (JSONObject) JSONObject.parse(msgData);
+			
+			Room.jt.append(msg.getString("from")+"："+GamePlane.dateFormat.format(new Date())+"\n"+"   "+msg.getString("msg")+"\n");
+			//设置总在最下方
+			Room.jt.setCaretPosition(Room.jt.getDocument().getLength());
+			
+		}else if(msgType.equals("systemNotify")){
+			
+			JSONObject msgJSON = (JSONObject) JSONObject.parse(msgData);
+			String notifyType= msgJSON.getString("NotifyType");
+			String username = msgJSON.getString("who");
+			String tip;
+			if(notifyType.equals("logout")) {
+				tip = "系统："+username  +"退出了游戏大厅\n";
+			}else {
+				tip = "系统："+username  +"加入了游戏大厅\n";
+			}
+			Room.jt.append(tip);
+			//设置总在最下方
+			Room.jt.setCaretPosition(Room.jt.getDocument().getLength());
 			
 		}else if(msgType.equals("BreakGame")) {
 			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方退出了房间，你赢的了这场比赛！");

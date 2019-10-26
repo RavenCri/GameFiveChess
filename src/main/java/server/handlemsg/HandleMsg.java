@@ -97,6 +97,10 @@ public class HandleMsg implements Runnable{
 							System.out.println(userPlayer.getNickName()+"登录了服务器");
 							sendMsgToPlayer(gameRoom.getUserBuffer1(), "AlreadyLogined","0");
 							SendChessBoardlist(gameRoom.getUserBuffer1().getWriterPlayer());
+							JSONObject msg  = new JSONObject();
+							msg.put("NotifyType","login");
+							msg.put("who",gameRoom.getUserBuffer1().getUser().getNickName());
+							sendMsgToAllPlayers("systemNotify", msg.toJSONString());
 						}							
 					}
 				}
@@ -130,6 +134,9 @@ public class HandleMsg implements Runnable{
 					//游戏聊天
 				}else if (msgType.equals("GameChat")) {
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "GameChat",msgData);
+				
+				}else if ( msgType.equals("salaChat")) {
+					sendMsgToAllPlayers("salaChat",msgData);
 					//游戏中途退出游戏
 				}else if(msgType.equals("BreakGame")) {
 				
@@ -161,6 +168,7 @@ public class HandleMsg implements Runnable{
 						}
 						
 					}
+					
 					break;
 				}else if (msgType.equals("RoomMessage")) {
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "RoomMessage", msgData);	
@@ -181,9 +189,17 @@ public class HandleMsg implements Runnable{
 				break;
 			} 
 		}
+		NotifyLogiout();
 		System.err.println("服务端一条循环线程终止");
 	}
 
+	private void sendMsgToAllPlayers(String msgType, String msgData) {
+		
+		OnlineManage.onlineUsers.forEach((user)->{
+			if(user != gameRoom.getUserBuffer1())
+				sendMsgToPlayer(user,msgType,msgData);
+		});
+	}
 	private void SendChessBoardlist(BufferedWriter bWriter) throws IOException {
 		System.out.println("获取棋盘列表如下：");
 		
@@ -264,16 +280,23 @@ public class HandleMsg implements Runnable{
 		
 	
 	}
+	public void NotifyLogiout() {
+		OnlineManage.onlineUsers.remove(gameRoom.getUserBuffer1());
+		JSONObject msg  = new JSONObject();
+		msg.put("NotifyType","logout");
+		msg.put("who",gameRoom.getUserBuffer1().getUser().getNickName());
+		sendMsgToAllPlayers("systemNotify", msg.toJSONString());
+	}
 	private synchronized void IOEX() {
 		if(socket.isConnected()) {
-			System.out.println("当前用户下线了。"+gameRoom.getUserBuffer1().getUser().getNickName());
+
 			if(gameRoom.getUserBuffer2() != null) {
+				System.out.println("当前用户下线了。"+gameRoom.getUserBuffer1().getUser().getNickName());
 				sendMsgToPlayer(gameRoom.getUserBuffer2(), "BreakGame", null);
+				LingoutChessBordRoom();
+				
 				
 			}
-			LingoutChessBordRoom();
-			
-			OnlineManage.onlineUsers.remove(gameRoom.getUserBuffer1());
 			
 		}
 		
