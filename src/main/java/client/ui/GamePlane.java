@@ -336,7 +336,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 				gameplayer1.setWinBoutAddOne();
 				gameplayer2.setWinBoutAddOne();
 				GameRoomUtil.SendMsgToServer(chessBoard, "heqi",null);
-				GameWinAfter(this);	
+				
 			}
 			
 		}else if (e.getX()>=650&&e.getX()<=830&&e.getY()>=80-40&&e.getY()<=140-40) {

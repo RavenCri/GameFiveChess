@@ -208,7 +208,7 @@ public class HandleMsgThread extends Thread{
 					System.out.println("同意和棋");
 					ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();
 					ChessBoard.gamepanel.gameplayer2.setWinBoutAddOne();
-					
+					JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方同意了和棋");
 					//游戏完成所做的事
 					ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);	
 
