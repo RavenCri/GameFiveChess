@@ -131,7 +131,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 					MouseAtChess = false;
 					setCursor(null);
 				}
-					
+				repaint();
 			}
 			@Override
 			public void mouseDragged(MouseEvent e) {
@@ -140,7 +140,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 			}
 	
 		});
-		repaint();
+		
 	}
 	
 

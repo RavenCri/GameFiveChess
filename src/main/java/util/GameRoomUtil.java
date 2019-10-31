@@ -142,7 +142,7 @@ public class GameRoomUtil {
 		}).start();
 	}
 	public static  void  playBgmusic() {
-		if(bGThread == null) {
+		
 			bGThread= 	new Thread() {
 				@Override
 				public void run() {
@@ -168,7 +168,7 @@ public class GameRoomUtil {
 				}
 			};
 			bGThread.start();
-		}
+		
 	
 	}
 	public static void stopmusic(){
