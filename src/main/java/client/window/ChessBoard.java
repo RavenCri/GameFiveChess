@@ -66,7 +66,7 @@ public class ChessBoard extends JFrame {
 	}
 	public ChessBoard(Room parFrame,String RoomType,User gamePlayer) {
 				setLayout(null);
-				
+				gamepanel.musicing = true;
 				//设置标题
 				this.setTitle("五子棋对战棋盘");
 				//设置窗体大小

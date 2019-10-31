@@ -140,6 +140,7 @@ public class Room extends JFrame {
 			public void windowClosing(WindowEvent e) {
 					GameRoomUtil.SendMsgToServer(priwid, "CloseLingoutGameRoom", null);
 					priwid.setVisible(true);
+					
 					dispose();
 			}
 		});

@@ -279,10 +279,9 @@ class MyPlane extends JPanel implements MouseListener{
 		//System.out.println("人机窗口！！");
 		//隐藏该窗口 创建人机窗口
 		if(BeginWindow.userPlayer==null) {
+			BeginWindow.userPlayer = new User();
 			BeginWindow.userPlayer.setUserName(JOptionPane.showInputDialog("给您起一个个性的名称吧~")); 
-			if(BeginWindow.userPlayer==null) {
-				return;
-			}
+			
 		}
 			
 		

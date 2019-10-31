@@ -94,6 +94,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 	Image imageCursor = Toolkit.getDefaultToolkit().getImage(classUrl);  
 	public GamePlane() {
 		setLayout(null);
+		
 		//透明
 		//setOpaque(false); 
 		//不要忘记添加 这个事件
@@ -130,7 +131,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 					MouseAtChess = false;
 					setCursor(null);
 				}
-				repaint();		
+					
 			}
 			@Override
 			public void mouseDragged(MouseEvent e) {
@@ -139,6 +140,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 			}
 	
 		});
+		repaint();
 	}
 	
 
@@ -333,8 +335,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 			}
 			int i =JOptionPane.showConfirmDialog(this, "你确定要和棋吗","和棋",2);
 			if(i==0) {
-				gameplayer1.setWinBoutAddOne();
-				gameplayer2.setWinBoutAddOne();
+				
 				GameRoomUtil.SendMsgToServer(chessBoard, "heqi",null);
 				
 			}

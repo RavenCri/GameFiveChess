@@ -142,31 +142,34 @@ public class GameRoomUtil {
 		}).start();
 	}
 	public static  void  playBgmusic() {
-	bGThread= 	new Thread() {
-			@Override
-			public void run() {
-				while(true) {
-				
-					File file = new File("source/bgmusic.mp3");
-					try {
-						InputStream in = new FileInputStream(file);
-						p = new Player(in);
-						p.play();
-						
-						
-						
-					} catch (FileNotFoundException e1) {
-						
-						e1.printStackTrace();
-					}catch (JavaLayerException e1) {
-						
-						e1.printStackTrace();
-					}	
-				
+		if(bGThread == null) {
+			bGThread= 	new Thread() {
+				@Override
+				public void run() {
+					while(true) {
+					
+						File file = new File("source/bgmusic.mp3");
+						try {
+							InputStream in = new FileInputStream(file);
+							p = new Player(in);
+							p.play();
+							
+							
+							
+						} catch (FileNotFoundException e1) {
+							
+							e1.printStackTrace();
+						}catch (JavaLayerException e1) {
+							
+							e1.printStackTrace();
+						}	
+					
+					}
 				}
-			}
-		};
-		bGThread.start();
+			};
+			bGThread.start();
+		}
+	
 	}
 	public static void stopmusic(){
 		if(bGThread!=null)
