@@ -58,7 +58,7 @@ public class Room extends JFrame {
 	
 	public static RoomPlane roomPlane = new RoomPlane();
 	public BeginWindow priwid;
-	
+	public static ChessBoard chessBoard;
 	public static LinkedBlockingQueue<JSONObject> msgQueue = new LinkedBlockingQueue<>();
 	public static volatile JSONArray roomList;
 	public static volatile boolean emptyRoom = true;
@@ -91,6 +91,7 @@ public class Room extends JFrame {
 		roomPlane.setLocation(0, 0);
 		//开启消息接收线程。
 		new ReceiveMsgThread().start();
+		ReceiveMsgThread.readFlag = true;
 		new HandleMsgThread().start();
 		
 				
@@ -140,7 +141,7 @@ public class Room extends JFrame {
 			public void windowClosing(WindowEvent e) {
 					GameRoomUtil.SendMsgToServer(priwid, "CloseLingoutGameRoom", null);
 					priwid.setVisible(true);
-					
+					ReceiveMsgThread.readFlag = false;
 					dispose();
 			}
 		});

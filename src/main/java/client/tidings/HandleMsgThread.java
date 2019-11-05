@@ -33,13 +33,18 @@ public class HandleMsgThread extends Thread{
 		public void run() {
 			while (true) {
 				try {
-					
-					if(!Room.msgQueue.isEmpty()) {
-						JSONObject msgJSON = Room.msgQueue.poll();
-						ResultMsg(msgJSON.getString("msgType"), msgJSON.getString("msg"));
+					if(ReceiveMsgThread.readFlag) {
+						if(!Room.msgQueue.isEmpty()  ) {
+							JSONObject msgJSON = Room.msgQueue.poll();
+							ResultMsg(msgJSON.getString("msgType"), msgJSON.getString("msg"));
+						}
+						
+						Thread.sleep(200);
+					}else {
+						System.out.println("停止了处理消息线程");
+						break;
 					}
 					
-					Thread.sleep(200);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -59,7 +64,7 @@ public class HandleMsgThread extends Thread{
 				}
 			}else if(msgType.equals("CreateRoomUserInfo")) {
 			//棋盘窗口
-			new ChessBoard(LoginFream.room,"ADDRoom",BeginWindow.userPlayer);
+			Room.chessBoard = new ChessBoard(LoginFream.room,"ADDRoom",BeginWindow.userPlayer);
 			User CreateRoomUser = JSONObject.toJavaObject(JSONObject.parseObject(msgData), User.class);
 			ChessBoard.gamepanel.setGameplayer2(CreateRoomUser); 
 			ChessBoard.gamepanel.repaint();
@@ -73,7 +78,7 @@ public class HandleMsgThread extends Thread{
 			ChessBoard.gamepanel.setGameplayer2(addRoomUser) ; 
 			
 			ChessBoard.gamepanel.repaint();
-			ChessBoard.jt.append("系统："+ChessBoard.gamepanel.dateFormat.format(new Date())+"\r\n"+"   "+ChessBoard.gamepanel.gameplayer2.getNickName()+"加入了您的房间\n");
+			ChessBoard.jt.append("系统："+GamePlane.dateFormat.format(new Date())+"\r\n"+"   "+ChessBoard.gamepanel.gameplayer2.getNickName()+"加入了您的房间\n");
 			
 			GameRoomUtil.SendMsgToServer(LoginFream.room, "RoomMessage", GamePlane.MyChessColor);
 		}else if (msgType.equals("CreateRoomSuccess")) {
@@ -81,7 +86,7 @@ public class HandleMsgThread extends Thread{
 			//然后设置当前窗口不可见
 			LoginFream.room.setVisible(false);
 			//棋盘窗口
-			new ChessBoard(LoginFream.room,"CreateRoom",BeginWindow.userPlayer);;
+			Room.chessBoard = new ChessBoard(LoginFream.room,"CreateRoom",BeginWindow.userPlayer);;
 		}else if(msgType.equals("LeaveRoom")) {
 			
 			

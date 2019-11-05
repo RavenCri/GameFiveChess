@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -334,14 +335,16 @@ class MyPlane extends JPanel implements MouseListener{
 	}
 	
 	private void playGame() {
+		int opotion = 0;
 		try {
 			
-			int i = JOptionPane.showConfirmDialog(this, "点击确定连接Raven的服务器，点击取消则连接本地服务器","连接方式",2);
+			opotion = JOptionPane.showConfirmDialog(this, "点击确定连接Raven的服务器，点击取消则连接本地服务器","连接方式",2);
 			
-			if(i==0) {
+			if(opotion==0) {
 				URL ip=new URL("http://raven.iask.in");
 				System.out.println(ip.getHost());
-				BeginWindow.socket = new Socket(ip.getHost(), 12790);
+				BeginWindow.socket = new Socket();
+				BeginWindow.socket.connect(new InetSocketAddress(ip.getHost(), 12790),2000);
 				BeginWindow.host = "http://raven.imwork.net/";
 			}else {
 				serverIp  = JOptionPane.showInputDialog(this, "请输入服务器IP地址(默认为本机->127.0.0.1)");
@@ -350,10 +353,15 @@ class MyPlane extends JPanel implements MouseListener{
 					serverIp ="127.0.0.1";
 					BeginWindow.host = "http://127.0.0.1:8080";
 				}
-				BeginWindow.socket = new Socket(serverIp,6666);
+				BeginWindow.socket = new Socket();
+				BeginWindow.socket.connect(new InetSocketAddress(serverIp, 6666),2000);
 			}
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this, "服务器连接失败！请检查地址是否正确");
+			if(opotion == 0) {
+				JOptionPane.showMessageDialog(this, "Raven的服务器连接超时了，请自行运行本地服务器哦~");
+				return;
+			}
+			JOptionPane.showMessageDialog(this, "服务器连接失败！请检测目标ip主机是否开启本地服务/防火墙。");
 			return;
 		}
 		

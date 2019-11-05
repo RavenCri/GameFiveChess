@@ -2,11 +2,14 @@ package client.tidings;
 
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import org.springframework.util.DigestUtils;
 
 import com.alibaba.fastjson.JSONObject;
 
 import client.window.BeginWindow;
+import client.window.LoginFream;
 import client.window.Room;
 
 /** 
@@ -17,6 +20,7 @@ import client.window.Room;
  */
 
 public class ReceiveMsgThread extends Thread{
+	public static boolean readFlag ;
 	@Override
 	public void run() {
 		
@@ -24,7 +28,14 @@ public class ReceiveMsgThread extends Thread{
 			JSONObject receive =  ReceiveMSg();
 			
 			try {
-				Room.msgQueue.put(receive);
+				if(receive != null && readFlag) {
+					Room.msgQueue.put(receive);
+				}else {
+					readFlag = false;
+					System.out.println("停止了读取消息线程");
+					break;
+				}
+					
 			
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -54,8 +65,24 @@ public class ReceiveMsgThread extends Thread{
 				System.out.println("消息验证错误");
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(LoginFream.room !=null) {
+				LoginFream.room.setVisible(false);
+				LoginFream.room.dispose();
+				if(LoginFream.room.priwid !=null) {
+					LoginFream.room.priwid.setVisible(false);
+					LoginFream.room.priwid.dispose();
+				}
+			}
+			
+			if(Room.chessBoard != null) {
+				Room.chessBoard.setVisible(false);
+				Room.chessBoard.dispose();
+			}
+			LoginFream.bWindow.setVisible(true);
+			JOptionPane.showMessageDialog(LoginFream.bWindow, "与服务器连接异常，您已退出了游戏。");
+			
+			
+			
 		}
 		return null;
 	}

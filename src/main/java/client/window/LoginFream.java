@@ -58,7 +58,7 @@ public class LoginFream extends JFrame{
 	private JButton loninButton ,regignButt;
 	private JLabel bg;
 	private JPanel panel=new JPanel();
-	
+	public static BeginWindow bWindow;
 	private Icon loginIcon ;
 	public boolean exit;
 	public LoginFream() {
@@ -68,6 +68,7 @@ public class LoginFream extends JFrame{
 	public LoginFream(BeginWindow bWindow){
 		super("登录界面");
 		SiteInit(this,500,400);
+		this.bWindow = bWindow;
 		//设置不能最大化
 		this.setResizable(false);
 		panel.setLayout(null);
