@@ -168,7 +168,8 @@ public class HandleMsg implements Runnable{
 						}
 						
 					}
-					
+					//通知大厅玩家 该玩家下线
+					NotifyLogiout();
 					break;
 				}else if (msgType.equals("RoomMessage")) {
 					sendMsgToPlayer(gameRoom.getUserBuffer2(), "RoomMessage", msgData);	
@@ -292,11 +293,11 @@ public class HandleMsg implements Runnable{
 	public void NotifyLogiout() {
 		OnlineManage.onlineUsers.remove(gameRoom.getUserBuffer1());
 		JSONObject msg  = new JSONObject();
-		if(gameRoom.getUserBuffer1().getUser() != null) {
-			msg.put("NotifyType","logout");
-			msg.put("who",gameRoom.getUserBuffer1().getUser().getNickName());
-			sendMsgToAllPlayers("systemNotify", msg.toJSONString());
-		}
+	
+		msg.put("NotifyType","logout");
+		msg.put("who",gameRoom.getUserBuffer1().getUser().getNickName());
+		sendMsgToAllPlayers("systemNotify", msg.toJSONString());
+		
 		
 		
 	}
