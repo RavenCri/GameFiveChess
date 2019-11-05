@@ -254,8 +254,11 @@ public class HandleMsg implements Runnable{
 				
 				//如果房间还有人，那么让他当房主。
 				if(room.getUserBuffer2() != null) {
+					//获取到 那个玩家的对象流
 					curr = room.getUserBuffer2();
+					//删除自己创建的
 					iterator.remove();
+					//发送给 那个玩家 房主退出房间了
 					sendMsgToPlayer(room.getUserBuffer2(), "LeaveRoom",null);
 					
 					
@@ -271,6 +274,7 @@ public class HandleMsg implements Runnable{
 			}
 			
 		}
+		// 如果房间有人，那么需要创建新的房间 房主为 加入者
 		if(curr != null)
 			OnlineManage.Rooms.add(new GameRoom(curr));
 		gameRoom.setUserBuffer2(null);

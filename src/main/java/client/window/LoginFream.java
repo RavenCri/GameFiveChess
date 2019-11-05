@@ -53,7 +53,7 @@ public class LoginFream extends JFrame{
 	boolean flag=false;
 	private JLabel jl = new JLabel("账号：");
 	private JLabel jl2 = new JLabel("密码：");
-	private JTextField textfield=new JTextField("请输入您的账号....",30);
+	private JTextField textfield=new JTextField("请输入您的账号",30);
 	private JPasswordField textfield2=new JPasswordField();
 	private JButton loninButton ,regignButt;
 	private JLabel bg;
@@ -132,7 +132,7 @@ public class LoginFream extends JFrame{
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			JTextField field =  (JTextField) e.getSource();
-			if(field.getText().contains("请输入您的账号....")){
+			if(field.getText().contains("账号")){
 				field.setText("");
 			}
 		}
