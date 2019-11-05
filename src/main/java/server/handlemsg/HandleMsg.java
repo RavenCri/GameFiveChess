@@ -185,11 +185,16 @@ public class HandleMsg implements Runnable{
 				}
 				
 			} catch (IOException e) {	
+				// 通知二号玩家 该玩家下线 ，让二号玩家更新房间状态
 				IOEX();
+				//通知大厅玩家 该玩家下线
+				NotifyLogiout();
+				//更新关于他的房间状态
+				LingoutChessBordRoom();
 				break;
 			} 
 		}
-		NotifyLogiout();
+		
 		System.err.println("服务端一条循环线程终止");
 	}
 
@@ -288,8 +293,10 @@ public class HandleMsg implements Runnable{
 		OnlineManage.onlineUsers.remove(gameRoom.getUserBuffer1());
 		JSONObject msg  = new JSONObject();
 		msg.put("NotifyType","logout");
+		System.out.println(gameRoom.getUserBuffer1());
 		msg.put("who",gameRoom.getUserBuffer1().getUser().getNickName());
 		sendMsgToAllPlayers("systemNotify", msg.toJSONString());
+		
 	}
 	private synchronized void IOEX() {
 		if(socket.isConnected()) {
@@ -297,7 +304,7 @@ public class HandleMsg implements Runnable{
 			if(gameRoom.getUserBuffer2() != null) {
 				System.out.println("当前用户下线了。"+gameRoom.getUserBuffer1().getUser().getNickName());
 				sendMsgToPlayer(gameRoom.getUserBuffer2(), "BreakGame", null);
-				LingoutChessBordRoom();
+				
 				
 				
 			}
@@ -357,6 +364,7 @@ public class HandleMsg implements Runnable{
 	public void sendToAllPlayersRoomList() {
 		OnlineManage.onlineUsers.forEach((userBuffer)->{
 			try {
+				
 				SendChessBoardlist(userBuffer.getWriterPlayer());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

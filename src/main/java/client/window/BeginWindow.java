@@ -158,7 +158,7 @@ class MyPlane extends JPanel implements MouseListener{
 			g2.setFont(gameFont);
 			g2.drawString("这是一款网络对战的五子棋", 40, 100);
 			g2.drawString("游戏，你可以和局域网中的", 40, 150);
-			g2.drawString("好友一起玩游戏啦", 40, 200);
+			g2.drawString("好友一起对战游戏哦", 40, 200);
 			g2.drawString("返回上个界面", 150, 500);
 			GameRoomUtil.writeString(p, mousedown, "返回上个界面", g2, 150, 500, 250, 50);
 		}else if (modelint==2) {
