@@ -293,7 +293,7 @@ public class HandleMsg implements Runnable{
 		OnlineManage.onlineUsers.remove(gameRoom.getUserBuffer1());
 		JSONObject msg  = new JSONObject();
 		msg.put("NotifyType","logout");
-		System.out.println(gameRoom.getUserBuffer1());
+	
 		msg.put("who",gameRoom.getUserBuffer1().getUser().getNickName());
 		sendMsgToAllPlayers("systemNotify", msg.toJSONString());
 		
