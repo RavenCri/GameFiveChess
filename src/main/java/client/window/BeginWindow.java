@@ -277,19 +277,22 @@ class MyPlane extends JPanel implements MouseListener{
 	public void ToComputerPlayGame(int AlgLeave) {
 		GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
 		//System.out.println("人机窗口！！");
+		String username = null;
 		//隐藏该窗口 创建人机窗口
 		if(BeginWindow.userPlayer==null) {
-			BeginWindow.userPlayer = new User();
-			BeginWindow.userPlayer.setUserName(JOptionPane.showInputDialog("给您起一个个性的名称吧~")); 
 			
+			username = JOptionPane.showInputDialog("给您起一个个性的名称吧~");
+			if(username == null || username.equals("")) {
+				
+				JOptionPane.showMessageDialog(beginWindow, "名字不能为空哦。");
+				return;
+			}
+			BeginWindow.userPlayer = new User();
+			BeginWindow.userPlayer.setUserName(username); 
 		}
 			
 		
-		if(BeginWindow.userPlayer.getUserName().equals("")) {
-			
-			JOptionPane.showMessageDialog(beginWindow, "名字不能为空哦。");
-			return;
-		}
+		
 		new ComputerGame(beginWindow, BeginWindow.userPlayer.getUserName(),AlgLeave);
 		beginWindow.setVisible(false);
 		
