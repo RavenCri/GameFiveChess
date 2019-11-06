@@ -35,6 +35,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import bean.User;
+import client.start.GameClient;
 import client.tidings.HandleMsgThread;
 import client.tidings.ReceiveMsgThread;
 import client.ui.GamePlane;
@@ -51,10 +52,10 @@ import util.GameRoomUtil;
 public class Room extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
-	public static ImageIcon man = new ImageIcon("source/man.jpg");
-	public static ImageIcon women = new ImageIcon("source/women.jpg");
-	public static ImageIcon chessWhite = new ImageIcon("source/chessWhite.png");
-	public static ImageIcon chessBlack = new ImageIcon("source/chessBlack.png");
+	public static ImageIcon man;
+	public static ImageIcon women;
+	public static ImageIcon chessWhite;
+	public static ImageIcon chessBlack;
 	
 	public static RoomPlane roomPlane = new RoomPlane();
 	public BeginWindow priwid;
@@ -71,6 +72,10 @@ public class Room extends JFrame {
 		//大小不变
 		setResizable(false);
 		setTitle("在线游戏列表");
+		man = new ImageIcon(getClass().getClassLoader().getResource("img/man.jpg"));
+		women = new ImageIcon(getClass().getClassLoader().getResource("img/women.jpg"));
+		chessWhite = new ImageIcon(getClass().getClassLoader().getResource("img/chessWhite.png"));
+		chessBlack = new ImageIcon(getClass().getClassLoader().getResource("img/chessBlack.png"));
 		man.setImage(man.getImage().getScaledInstance(40, 40,
 				Image.SCALE_DEFAULT));
 		women.setImage(women.getImage().getScaledInstance(40, 40,

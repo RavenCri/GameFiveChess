@@ -98,68 +98,58 @@ public class GameRoomUtil {
 		}
 		g2.setColor(Color.black);
 	}
-	public static void palyothermusic(String filename){
+	public  void palyothermusic(String filename){
 		
 		new Thread(()->{
 			
-		File file = new File(filename);
-		if(file.exists()) {
+	
 			try {
-				InputStream in = new FileInputStream(file);
+				InputStream in = getClass().getClassLoader().getResourceAsStream("sound/"+filename);
 				
 				Player p = new Player(in);
 				p.play();
 				
-			} catch (FileNotFoundException e1) {
-			
-				e1.printStackTrace();
-			}catch (JavaLayerException e1) {
+			} catch (JavaLayerException e1) {
 				
 				e1.printStackTrace();
 			}	
-		}
+		
 		
 		}).start();
 	}
-	public static  void  playChessMovemusic(String filename) {
+	public   void  playChessMovemusic( ) {
 		new Thread(()->{
 			BeginWindow.bofang = true;
-		File file = new File(filename);
-		try {
-			InputStream in = new FileInputStream(file);
-			
-			Player play = new Player(in);
-			play.play();
-			
-			BeginWindow.bofang = false;
-		} catch (FileNotFoundException e1) {
-			
-			e1.printStackTrace();
-		}catch (JavaLayerException e1) {
-			
-			e1.printStackTrace();
-		}	
+		
+			try {
+				InputStream in = getClass().getClassLoader().getResourceAsStream("sound/move.mp3");
+				
+				Player play = new Player(in);
+				play.play();
+				
+				BeginWindow.bofang = false;
+			} catch (JavaLayerException e1) {
+				
+				e1.printStackTrace();
+			}	
 		}).start();
 	}
-	public static  void  playBgmusic() {
+	public   void  playBgmusic() {
 		
 			bGThread= 	new Thread() {
 				@Override
 				public void run() {
 					while(true) {
 					
-						File file = new File("source/bgmusic.mp3");
+						
 						try {
-							InputStream in = new FileInputStream(file);
+							InputStream in = getClass().getClassLoader().getResourceAsStream("sound/bgmusic.mp3");
 							p = new Player(in);
 							p.play();
 							
 							
 							
-						} catch (FileNotFoundException e1) {
-							
-							e1.printStackTrace();
-						}catch (JavaLayerException e1) {
+						} catch (JavaLayerException e1) {
 							
 							e1.printStackTrace();
 						}	

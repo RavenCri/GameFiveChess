@@ -39,6 +39,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.alibaba.fastjson.JSONObject;
 
 import bean.User;
+import client.start.GameClient;
 import client.tidings.ReceiveMsgThread;
 import util.GameRoomUtil;
 import util.HttpConnectUtil;
@@ -102,7 +103,7 @@ public class LoginFream extends JFrame{
 		loninButton.setForeground(Color.red);
 		loninButton.setBounds(70, 170, 110, 50);
 		loninButton.setOpaque(false);
-		loginIcon =new ImageIcon("source/btn.png");
+		loginIcon =new ImageIcon(getClass().getClassLoader().getResource("img/btn.png"));
 		loninButton.setIcon(loginIcon);
 		
 		regignButt = new JButton("注册");
@@ -122,7 +123,7 @@ public class LoginFream extends JFrame{
 		realizePassWorld.setBounds(300,125,140,20);
 		realizePassWorld.setOpaque(false);//使其透明
 		panel.add(realizePassWorld);
-		bg= new JLabel(new ImageIcon("source/bg.jpg")); 
+		bg= new JLabel(new ImageIcon(getClass().getClassLoader().getResource("img/bg.jpg"))); 
 		bg.setLayout(null);
 		bg.setBounds(0,0,500,400);
 		panel.add(bg);

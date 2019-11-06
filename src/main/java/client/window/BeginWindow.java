@@ -96,7 +96,7 @@ class MyPlane extends JPanel implements MouseListener{
 	
 	Font beginFont = new Font("黑体",Font.BOLD,60);
 	Font gameFont = new Font("黑体",Font.BOLD,30);
-	static ImageIcon bgImg = new ImageIcon("source/bkImg.jpg");
+	static ImageIcon bgImg;
 	static Point p =new Point();
 	
 	//判断鼠标是否按下
@@ -105,12 +105,13 @@ class MyPlane extends JPanel implements MouseListener{
 	int modelint = 0;
 	Timer timer;
 	static String serverIp = "127.0.0.1";
+	private GameRoomUtil gameRoomUtil = new GameRoomUtil();
 	public MyPlane() {
 	
 	}
 	
 	public MyPlane(BeginWindow beginWindow) {
-		
+		bgImg = new ImageIcon(getClass().getClassLoader().getResource("img/bkImg.jpg"));
 		this.beginWindow = beginWindow;
 		//针对鼠标移动的接口  
 				this.addMouseMotionListener(new MouseMotionAdapter() {
@@ -128,6 +129,7 @@ class MyPlane extends JPanel implements MouseListener{
 					}
 				});
 				addMouseListener(this);
+				repaint();
 	}
 	@Override
 	public void paint(Graphics g) {
@@ -239,7 +241,7 @@ class MyPlane extends JPanel implements MouseListener{
 				ToComputerPlayGame(1);
 				repaint();
 			}
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");
 		//人机界面	
 		}else if(p.getX()>=120&&p.getX()<=330-30&&p.getY()>=260&&p.getY()<=360-40&&(modelint==0||modelint==3)) {
 			
@@ -249,34 +251,34 @@ class MyPlane extends JPanel implements MouseListener{
 				ToComputerPlayGame(2);
 				repaint();
 			}
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");
 			
 		}else if(p.getX()>=120&&p.getX()<=330-30&&p.getY()>=360&&p.getY()<=460-40&&modelint==0) {
 			
 			modelint=1;
 			repaint();
 			//进入 游戏说明
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");
 		}else if(p.getX()>=120&&p.getX()<=330-30&&p.getY()>=460&&p.getY()<=560-40&&modelint==0) {
 			
 			modelint=2;
 			repaint();
 			// 进入关于作者
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");
 			//  y坐标注意要减字体大小的像素
 			
 		}else if (p.getX()>=150-30&&p.getX()<=400-30&&p.getY()>=500-40&&p.getY()<=550-40&&(modelint==1||modelint==2||modelint==3)) {
 			//点击 返回上一界面
 			modelint=0;
 			repaint();
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");
 		}
 		
 		
 	}
 
 	public void ToComputerPlayGame(int AlgLeave) {
-		GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+		gameRoomUtil.palyothermusic("mousedown.mp3");
 		//System.out.println("人机窗口！！");
 		String username = null;
 		//隐藏该窗口 创建人机窗口
@@ -301,7 +303,7 @@ class MyPlane extends JPanel implements MouseListener{
 	}
 
 	public void OnlinePlaygame() {
-		GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+		gameRoomUtil.palyothermusic("mousedown.mp3");
 		playGame();
 	}
 

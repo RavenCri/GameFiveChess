@@ -44,7 +44,7 @@ public class RoomPlane extends JPanel{
 	public boolean hide =false;
 	// 坑爹 的boolean不初始化就是空指针！！！
 	Boolean mousedown = false;
-	static ImageIcon bgImg = new ImageIcon("source/bkImg.jpg");
+	static ImageIcon bgImg;
 	int lasty = 150;
 	Map<String,String> nameMap = new HashMap<String,String>();
 	/**
@@ -60,6 +60,7 @@ public class RoomPlane extends JPanel{
 	
 	public RoomPlane() {
 		mous = new MouseAdapterOfRoomPlane(this);
+		bgImg = new ImageIcon(getClass().getClassLoader().getResource("img/bkImg.jpg"));
 		addMouseListener(mous);
 		addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseMoved(MouseEvent e) {

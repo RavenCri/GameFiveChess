@@ -60,7 +60,7 @@ public class ChessBoard extends JFrame {
 	public JSplitPane chatPlane;
 	public static JTextArea jt  = new JTextArea();
 	public JScrollPane jscroll ;
-	
+	private GameRoomUtil gameRoomUtil = new GameRoomUtil();
 	public ChessBoard() {
 		
 	}
@@ -80,7 +80,7 @@ public class ChessBoard extends JFrame {
 				this.parFrame = parFrame;
 				this.RoomType = RoomType;
 				//播放背景音乐
-				GameRoomUtil.playBgmusic();
+				new GameRoomUtil().playBgmusic();
 				
 				
 				setResizable(false);
@@ -144,18 +144,18 @@ public class ChessBoard extends JFrame {
 						
 						
 						if(sendtext.getText().contains("快点")) {
-							GameRoomUtil.palyothermusic("source/flowerdie.mp3");
+							gameRoomUtil.palyothermusic("flowerdie.mp3");
 						}
 						if(sendtext.getText().contains("停止")) {
 							GameRoomUtil.stopmusic();
 							gamepanel.musicing = false;
 						}
 						if(sendtext.getText().contains("开始")) {
-							GameRoomUtil.playBgmusic();
+							new GameRoomUtil().playBgmusic();
 							gamepanel.musicing = true;
 						}
 						
-						jt.append(gamepanel.gameplayer1.getNickName()+"："+gamepanel.dateFormat.format(new Date())+"\n"+"   "+sendtext.getText()+"\n");
+						jt.append(gamepanel.gameplayer1.getNickName()+"："+GamePlane.dateFormat.format(new Date())+"\n"+"   "+sendtext.getText()+"\n");
 						sendtext.setText("");
 						//最下方
 						jt.setCaretPosition(jt.getDocument().getLength());

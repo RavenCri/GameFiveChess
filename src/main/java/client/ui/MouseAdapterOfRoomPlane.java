@@ -14,7 +14,7 @@ import util.GameRoomUtil;
 public class MouseAdapterOfRoomPlane extends MouseAdapter{
 	RoomPlane roomPlane;
 	String lastMsg = null;
-	
+	private GameRoomUtil gameRoomUtil = new GameRoomUtil();
 	public MouseAdapterOfRoomPlane(){
 		
 	}
@@ -25,7 +25,7 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 
 			//x -30  Y-40是矩形的左上角的点
 			if(roomPlane.p.getX()>=100-30&&roomPlane.p.getX()<=100-30+roomPlane.rectwidth&&roomPlane.p.getY()>=roomPlane.lasty-40&&roomPlane.p.getY()<=roomPlane.lasty-40+roomPlane.rectheight) {
-				GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+				gameRoomUtil.palyothermusic("mousedown.mp3");
 				//给服务端发送创建房间消息
 				GameRoomUtil.SendMsgToServer(roomPlane.room,"CreateGameRoom",null);
 				
@@ -33,7 +33,7 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 			
 			}else if(roomPlane.p.getX()>=500-30&&roomPlane.p.getX()<=500-30+roomPlane.rectwidth&&roomPlane.p.getY()>=roomPlane.lasty-40&&roomPlane.p.getY()<=roomPlane.lasty-40+roomPlane.rectheight) {
 				
-				GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+				gameRoomUtil.palyothermusic("mousedown.mp3");
 				//获取在线游戏房间列表	
 				GameRoomUtil.SendMsgToServer(roomPlane.room,"GetOnlineGame",null);
 				
@@ -54,7 +54,7 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 			
 			//上一页	
 			}else if (roomPlane.p.getX()>=100-30&&roomPlane.p.getX()<=100-30+roomPlane.rectwidth&&roomPlane.p.getY()>=700-40&&roomPlane.p.getY()<=700-40+roomPlane.rectheight) {
-				GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+				gameRoomUtil.palyothermusic("mousedown.mp3");
 				if(roomPlane.currpage==roomPlane.indexpage) {
 					JOptionPane.showMessageDialog(roomPlane, "当前已经是第一页啦");
 				}else {
@@ -63,7 +63,7 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 				
 			//下一页		
 			}else if (roomPlane.p.getX()>=500-30&&roomPlane.p.getX()<=500-30+roomPlane.rectwidth&&roomPlane.p.getY()>=700-40&&roomPlane.p.getY()<=700-40+roomPlane.rectheight) {
-				GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+				gameRoomUtil.palyothermusic("mousedown.mp3");
 				if(roomPlane.currpage==roomPlane.lastpage-1) {
 					JOptionPane.showMessageDialog(roomPlane, "当前已经是最后一页啦");
 				}else {
@@ -78,7 +78,7 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 					
 						if(i<RoomPlane.hasplayer.size())
 						if(RoomPlane.hasplayer.get(i).equals("0")) {
-							GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+							gameRoomUtil.palyothermusic("mousedown.mp3");
 						
 							//namemap存放的是当前页房主的所有唯一账号
 							GameRoomUtil.SendMsgToServer(roomPlane.room,"AddGameHomeOwner",roomPlane.nameMap.get(""+i));

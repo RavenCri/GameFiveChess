@@ -54,12 +54,13 @@ public class ComputerGame extends JFrame {
 
 	int ChessBoardWidth = 1800;
 	int ChessBoardHeight  =  1000;
-	
-	BeginWindow parFrame;
-	GamePlane gamepanel;
-	JSplitPane chatPlane;
+	GameRoomUtil gameRoomUtil = new GameRoomUtil();
+	public BeginWindow parFrame;
+	public  GamePlane gamepanel;
+	private JSplitPane chatPlane;
 	JTextArea jt  = new JTextArea();
 	JScrollPane jscroll ;
+	
 	public ComputerGame() {
 		
 	}
@@ -79,7 +80,7 @@ public class ComputerGame extends JFrame {
 				this.parFrame = parFrame;
 				
 				//播放背景音乐
-				GameRoomUtil.playBgmusic();
+				new GameRoomUtil().playBgmusic();
 				
 				
 				setResizable(false);
@@ -142,7 +143,7 @@ public class ComputerGame extends JFrame {
 							return;
 						}
 						if(sendtext.getText().contains("快点")) {
-							GameRoomUtil.palyothermusic("source/flowerdie.mp3");
+							gameRoomUtil.palyothermusic("flowerdie.mp3");
 						}
 						
 						if(sendtext.getText().contains("停止")) {
@@ -150,7 +151,7 @@ public class ComputerGame extends JFrame {
 							gamepanel.musicing = false;
 						}
 						if(sendtext.getText().contains("开始")) {
-							GameRoomUtil.playBgmusic();
+							new GameRoomUtil().playBgmusic();
 							gamepanel.musicing = true;
 						}
 						
@@ -260,7 +261,7 @@ class WindowEvent implements WindowListener{
 class xiaqiThread extends Thread{
 	GamePlane gmplane;
 	MouseEvent e;
-	
+	GameRoomUtil gameRoomUtil = new GameRoomUtil();
 	CompututerAlg compututerAlg = new CompututerAlg();
 	public xiaqiThread(GamePlane chessBoard, MouseEvent e) {
 		this.gmplane = chessBoard;
@@ -312,7 +313,7 @@ class xiaqiThread extends Thread{
 				}else {
 					gmplane.allChess[gmplane.rx][gmplane.ry] =2;
 				}
-				GameRoomUtil.palyothermusic("source/mousedown.mp3");
+				gameRoomUtil.palyothermusic("mousedown.mp3");
 				gmplane.chessPoint.add(gmplane.MyChessColor+","+(gmplane.rx*45+430)+","+(gmplane.ry*45+110));
 				gmplane.isme = false;
 				
@@ -327,7 +328,7 @@ class xiaqiThread extends Thread{
 					gmplane.chessBoard.jt.append("系统："+gmplane.dateFormat.format(new Date())+"\n   你赢得了比赛！！\n");
 					gmplane.MyplayGamewinnum++;
 					gmplane.GameWinAfter(gmplane);
-					GameRoomUtil.palyothermusic("source/winmusic.mp3");
+					gameRoomUtil.palyothermusic("winmusic.mp3");
 				}else {
 					ComputerXiaqi(gmplane);
 				}
@@ -396,12 +397,14 @@ class GamePlane extends JSplitPane implements MouseListener{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	static ImageIcon stopImage  = new ImageIcon("source/stop.png");
-	static ImageIcon bgImage  = new ImageIcon("source/bgImage.jpg");
-	static ImageIcon chatImage = new ImageIcon("source/chat.png");
-	static ImageIcon moveImage = new ImageIcon("source/move.png");
-	static ImageIcon beginBG = new ImageIcon("source/bfmusic.png");
-	static ImageIcon StopBG = new ImageIcon("source/stopmusic.png");
+	public  ImageIcon stopImage;
+	public  ImageIcon bgImage;
+	public  ImageIcon chatImage;
+
+	public  ImageIcon beginBG;
+	public  ImageIcon StopBG;
+	public ImageIcon man ;
+	public ImageIcon women ;
 	BufferedImage qizi = null;
 	BufferedImage bqizi = null;
 	BufferedImage hqizi = null;
@@ -432,7 +435,8 @@ class GamePlane extends JSplitPane implements MouseListener{
 	boolean isme = true;
 	DecimalFormat df = new DecimalFormat("0.00");
 	String gameplayer2 ="风萧萧兮易水寒";
-	
+	public  ImageIcon chessWhite;
+	public  ImageIcon chessBlack;
 	
 	//白1黑2
 	String MyChessColor ="black";
@@ -440,7 +444,7 @@ class GamePlane extends JSplitPane implements MouseListener{
 	String ComputerChessColor ="white";
 	int ComputerChessColorINT = 1;
 	
-	
+	private GameRoomUtil gameRoomUtil = new GameRoomUtil();
 	
 	BufferedImage Colorstaus;
 	//胜率
@@ -454,8 +458,7 @@ class GamePlane extends JSplitPane implements MouseListener{
 	int PlayGamenum = 0;
 	
 	boolean kaishi = false;
-	ImageIcon man = new ImageIcon("source/man.jpg");
-	ImageIcon women = new ImageIcon("source/women.jpg");
+
 	
 	URL classUrl = this.getClass().getResource("");  
 	//空的图片 即就是隐藏鼠标
@@ -466,6 +469,16 @@ class GamePlane extends JSplitPane implements MouseListener{
 		this.AlgLeave = AlgLeave;
 		this.gameplayer1 = gameplayer1;
 		this.chessBoard = chessBoard;
+		stopImage  = new ImageIcon(getClass().getClassLoader().getResource("img/stop.png"));
+		bgImage  = new ImageIcon(getClass().getClassLoader().getResource("img/bgImage.jpg"));
+		chatImage = new ImageIcon(getClass().getClassLoader().getResource("img/chat.png"));
+	//	moveImage = new ImageIcon(getClass().getClassLoader().getResource("img/move.png"));
+		beginBG = new ImageIcon(getClass().getClassLoader().getResource("img/bfmusic.png"));
+		StopBG = new ImageIcon(getClass().getClassLoader().getResource("img/stopmusic.png"));
+		man = new ImageIcon(getClass().getClassLoader().getResource("img/man.jpg"));
+		women = new ImageIcon(getClass().getClassLoader().getResource("img/women.jpg"));
+		chessWhite = new ImageIcon(getClass().getClassLoader().getResource("img/chessWhite.png"));
+		chessBlack = new ImageIcon(getClass().getClassLoader().getResource("img/chessBlack.png"));
 		//透明
 		//setOpaque(false); 
 		//不要忘记添加 这个事件
@@ -473,7 +486,7 @@ class GamePlane extends JSplitPane implements MouseListener{
 	
 		try {
 			
-			qizi = ImageIO.read(new File("source/qizi.png"));
+			qizi = ImageIO.read(getClass().getClassLoader().getResource("img/qizi.png"));
 			hqizi = qizi.getSubimage(10, 10, 85, 85);
 			bqizi = qizi.getSubimage(5, 95, 85,85);
 			
@@ -486,7 +499,7 @@ class GamePlane extends JSplitPane implements MouseListener{
 		man.setImage(man.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT));
 		women.setImage(women.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT));
 		stopImage.setImage(stopImage.getImage().getScaledInstance(40, 40, Image.SCALE_DEFAULT));
-		moveImage.setImage(moveImage.getImage().getScaledInstance(400, 400, Image.SCALE_DEFAULT));	
+	
 		addMouseMotionListener(new MouseMotionListener() {
 		
 			@Override
@@ -496,7 +509,7 @@ class GamePlane extends JSplitPane implements MouseListener{
 
 					
 					if(!BeginWindow.bofang) {
-						GameRoomUtil.playChessMovemusic("source/move.mp3");
+						gameRoomUtil.playChessMovemusic();
 						
 					}
 					MouseAtChess = true;
@@ -532,7 +545,7 @@ class GamePlane extends JSplitPane implements MouseListener{
 		
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);  
 		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,RenderingHints.VALUE_STROKE_DEFAULT); 
-		g2.drawImage(GamePlane.bgImage.getImage(), 0, 0,GameWidth, GameHeight, GamePlane.bgImage.getImageObserver());
+		g2.drawImage(bgImage.getImage(), 0, 0,GameWidth, GameHeight, bgImage.getImageObserver());
 		g2.setColor(Color.BLACK);
 		for(int i=0;i<15;i++) {
 			g2.drawLine(430, 110+45*i, 1060, 110+45*i);
@@ -574,13 +587,13 @@ class GamePlane extends JSplitPane implements MouseListener{
 
 //画头像下的棋子颜色
 		if(MyChessColor.equals("white")) {
-			g2.drawImage(Room.chessWhite.getImage(), 150,260,60,60,this);
+			g2.drawImage(chessWhite.getImage(), 150,260,60,60,this);
 			if(!gameplayer2.equals(""))
-			g2.drawImage(Room.chessBlack.getImage(), 150,750,60,60,this);
+			g2.drawImage(chessBlack.getImage(), 150,750,60,60,this);
 		}else {
-			g2.drawImage(Room.chessBlack.getImage(), 150,260,60,60,this);
+			g2.drawImage(chessBlack.getImage(), 150,260,60,60,this);
 			if(!gameplayer2.equals(""))
-			g2.drawImage(Room.chessWhite.getImage(), 150,750,60,60,this);
+			g2.drawImage(chessWhite.getImage(), 150,750,60,60,this);
 		}
 	
 	// 画棋子
@@ -619,10 +632,10 @@ class GamePlane extends JSplitPane implements MouseListener{
 		}
 		if(musicing) {
 			
-			g2.drawImage(GamePlane.StopBG.getImage(), 1200, 30,50,50, this);
+			g2.drawImage(StopBG.getImage(), 1200, 30,50,50, this);
 		}else {
 			
-			g2.drawImage(GamePlane.beginBG.getImage(), 1200, 30,50,50, this);
+			g2.drawImage(beginBG.getImage(), 1200, 30,50,50, this);
 		}
 		
 		
@@ -639,9 +652,10 @@ class GamePlane extends JSplitPane implements MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		
 		new xiaqiThread(this,e).start();
 		if (e.getX()>=510&&e.getX()<=630&&e.getY()>=820-40&&e.getY()<=880-40) {
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");
 			if(!kaishi) {
 				JOptionPane.showMessageDialog(this, "游戏还没有开始~你就认输了？？","false",2);
 				return;
@@ -654,7 +668,7 @@ class GamePlane extends JSplitPane implements MouseListener{
 			}
 		
 		}else if (e.getX()>=710&&e.getX()<=830&&e.getY()>=820-40&&e.getY()<=880-40) {
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");
 			if(!kaishi) {
 				JOptionPane.showMessageDialog(this, "游戏还没有开始~","false",2);
 				return;
@@ -681,7 +695,7 @@ class GamePlane extends JSplitPane implements MouseListener{
 			}
 		
 		}else if (e.getX()>=910&&e.getX()<=1030&&e.getY()>=820-40&&e.getY()<=880-40) {
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");;
 			if(!kaishi) {
 				JOptionPane.showMessageDialog(this, "游戏还没有开始~","false",2);
 				return;
@@ -692,10 +706,11 @@ class GamePlane extends JSplitPane implements MouseListener{
 			}
 			
 		}else if (e.getX()>=650&&e.getX()<=830&&e.getY()>=80-40&&e.getY()<=140-40) {
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("mousedown.mp3");;
 			kaishi = true;
 			System.out.println("开始游戏了");
-			GameRoomUtil.palyothermusic("source/begin.mp3");
+			gameRoomUtil.palyothermusic("begin.mp3");;
+		
 			//如果电脑先手
 			if(ComputerChessColorINT==2) {
 				rx = new Random().nextInt(14);
@@ -705,14 +720,14 @@ class GamePlane extends JSplitPane implements MouseListener{
 			}
 			
 		}else if (e.getX()>=1200&&e.getX()<=1250&&e.getY()>=30&&e.getY()<=80) {
-			GameRoomUtil.playChessMovemusic("source/mousedown.mp3");
+			gameRoomUtil.palyothermusic("begin.mp3");
 			if(musicing) {
 				musicing = false;
 				
 				GameRoomUtil.stopmusic();
 			}else {
 				musicing = true;
-				GameRoomUtil.playBgmusic();
+				new GameRoomUtil().playBgmusic();
 			}
 			
 		}

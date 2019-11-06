@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import bean.User;
+import client.start.GameClient;
 import client.ui.GamePlane;
 import client.ui.MouseAdapterOfRoomPlane;
 import client.ui.RoomPlane;
@@ -28,7 +29,7 @@ import util.GameRoomUtil;
  */
 
 public class HandleMsgThread extends Thread{
-	
+
 	@Override
 		public void run() {
 			while (true) {
@@ -52,6 +53,7 @@ public class HandleMsgThread extends Thread{
 			}
 		}
 	public static void ResultMsg(String msgType ,String msgData) {
+		GameRoomUtil gameRoomUtil = new GameRoomUtil();
 		if(msgType.equals("CloseGameRoom") ) {
 				if(BeginWindow.out!=null) {
 					try {
@@ -131,7 +133,7 @@ public class HandleMsgThread extends Thread{
 		}else if (msgType.equals("GameBegin")) {
 			System.out.println("游戏开始");
 			ChessBoard.gamepanel.kaishi = true;
-			GameRoomUtil.palyothermusic("source/begin.mp3");
+			gameRoomUtil.palyothermusic("begin.mp3");
 			
 		}else if (msgType.equals("GameReady")) {
 			if(msgData.equals("0")) {
@@ -141,9 +143,9 @@ public class HandleMsgThread extends Thread{
 			}
 		}else if(msgType.equals("GameChat")){
 			if(msgData.contains("快点")) {
-				GameRoomUtil.palyothermusic("source/flowerdie.mp3");
+				gameRoomUtil.palyothermusic("flowerdie.mp3");
 			}
-			GameRoomUtil.palyothermusic("source/chating.mp3");
+			gameRoomUtil.palyothermusic("chating.mp3");
 			ChessBoard.jt.append(ChessBoard.gamepanel.gameplayer2.getNickName()+"："+ChessBoard.gamepanel.dateFormat.format(new Date())+"\n   "+msgData.toString()+"\n");
 			//设置总在最下方
 			ChessBoard.jt.setCaretPosition(ChessBoard.jt.getDocument().getLength());
@@ -177,7 +179,7 @@ public class HandleMsgThread extends Thread{
 			
 			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
 			
-			GameRoomUtil.palyothermusic("source/winmusic.mp3");
+			gameRoomUtil.palyothermusic("winmusic.mp3");
 		}else if (msgType.equals("YouLose")) {
 			
 			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "你输了比赛哦~");
@@ -205,7 +207,7 @@ public class HandleMsgThread extends Thread{
 		}else if (msgType.equals("AdmitDefeat")) {
 			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方认输了，你很棒哦");
 			ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();
-			GameRoomUtil.palyothermusic("source/winmusic.mp3");
+			gameRoomUtil.palyothermusic("winmusic.mp3");
 			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);	
 		}else if (msgType.equals("heqi")) {
 			if(msgData != null) {

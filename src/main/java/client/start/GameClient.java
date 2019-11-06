@@ -2,7 +2,12 @@ package client.start;
 
 
 
+import java.io.File;
+import java.io.IOException;
 import javax.swing.UIManager;
+
+import org.apache.ibatis.javassist.ClassClassPath;
+import org.springframework.core.io.ClassPathResource;
 
 import client.window.BeginWindow;
 
@@ -15,11 +20,12 @@ import client.window.BeginWindow;
  */
 public class GameClient {
 	public static BeginWindow beginWindow;
-	
+
 	public static String onlineGameMSG;
 	public static String namerepeatMSG;
 	public static String roomFullOrRoomDistroyMSG;
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		
 		
 		 try {
 			
