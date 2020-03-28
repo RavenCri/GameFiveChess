@@ -26,7 +26,8 @@ public class GameClient {
 		org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
 		// 启动窗游戏口
 		beginWindow= new BeginWindow();
-
+		beginWindow.setVisible(false);
+		beginWindow.setVisible(true);
 	}
 }
 /*
