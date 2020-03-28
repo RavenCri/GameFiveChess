@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import client.config.ConnectConfig;
 import common.pojo.User;
 import client.computer.ComputerGame;
 import util.GameRoomUtil;
@@ -346,21 +347,21 @@ class MyPlane extends JPanel implements MouseListener{
 			opotion = JOptionPane.showConfirmDialog(this, "点击确定连接Raven的服务器，点击取消则连接本地服务器","连接方式",2);
 			// 如果登录我提供的公网服务器
 			if(opotion==0) {
-				URL ip=new URL("http://raven520.top");
+				URL ip=new URL(ConnectConfig.publicNet_webServer);
 				System.out.println(ip.getHost());
 				BeginWindow.socket = new Socket();
-				BeginWindow.socket.connect(new InetSocketAddress(ip.getHost(), 6666),2000);
-				BeginWindow.webHost = "http://fivechess.raven520.top:5500";
+				BeginWindow.socket.connect(new InetSocketAddress(ip.getHost(), ConnectConfig.socketPort),2000);
+				BeginWindow.webHost = ConnectConfig.publicNet_webServer;
 			// 用本地自己搭建的服务器
 			}else {
 				serverIp  = JOptionPane.showInputDialog(this, "请输入服务器IP地址(默认为本机->127.0.0.1)");
 				if(serverIp==null)return;
 				if(serverIp.equals("")) {
 					serverIp ="127.0.0.1";
-					BeginWindow.webHost = "http://127.0.0.1:8080";
+					BeginWindow.webHost = ConnectConfig.localNet_webServer;
 				}
 				BeginWindow.socket = new Socket();
-				BeginWindow.socket.connect(new InetSocketAddress(serverIp, 6666),2000);
+				BeginWindow.socket.connect(new InetSocketAddress(serverIp, ConnectConfig.socketPort),2000);
 			}
 		} catch (IOException e) {
 			if(opotion == 0) {
