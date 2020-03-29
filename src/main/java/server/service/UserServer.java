@@ -5,7 +5,11 @@ import org.springframework.stereotype.Service;
 
 import common.pojo.User;
 import server.dao.UserMapper;
+
+import java.util.List;
+
 @Service
+
 public class UserServer {
 	@Autowired
 	UserMapper userMapper ;
@@ -35,5 +39,15 @@ public class UserServer {
 		User selectUser = userMapper.getUserByUserName(userName);
 		selectUser.setPassWord("");
 		return selectUser;
+	}
+	public void addFriend(String username1,String username2){
+		int userId1 = getUser(username1).getId();
+		int userId2 = getUser(username2).getId();
+		userMapper.addFriend(userId1,userId2);
+
+		userMapper.addFriend(userId2,userId1);
+	}
+	public List<User> getUserFriendByUserName(String username){
+		return userMapper.getUserFriendByUserName(username);
 	}
 }

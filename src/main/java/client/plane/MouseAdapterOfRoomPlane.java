@@ -5,6 +5,8 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JOptionPane;
 
+import client.window.ChessBoard;
+import client.window.LoginFream;
 import util.GameRoomUtil;
 
 public class MouseAdapterOfRoomPlane extends MouseAdapter{
@@ -75,7 +77,20 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 						if(i<RoomPlane.hasplayer.size())
 						if(RoomPlane.hasplayer.get(i).equals("0")) {
 							gameRoomUtil.palyothermusic("sound/mousedown.mp3");
-						
+							if(roomPlane.nameMap.get(""+i).equals(roomPlane.room.priwid.userPlayer.getUserName())){
+								JOptionPane.showMessageDialog(roomPlane, "你不能自己加入自己~");
+								return;
+							}
+							if(roomPlane.room.chessBoard.gamepanel.gameplayer2!=null){
+								GameRoomUtil.SendMsgToServer(LoginFream.room.chessBoard,"LeaveRoom",null);
+								LoginFream.room.chessBoard.dispose();
+								GameRoomUtil.stopBackgroundMusic();//停止播放音乐
+								ChessBoard.jt.setText("");
+
+								ChessBoard.gamepanel.zhunbei = false;
+								ChessBoard.gamepanel.kaishi = false;
+								ChessBoard.gamepanel.chessPoint.clear();
+							}
 							//namemap存放的是当前页房主的所有唯一账号
 							GameRoomUtil.SendMsgToServer(roomPlane.room,"AddGameHomeOwner",roomPlane.nameMap.get(""+i));
 						}

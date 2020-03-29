@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
@@ -22,25 +24,39 @@ import server.pojo.GameRoom;
 import server.pojo.UsersBuffer;
 import server.pojo.OnlineManage;
 import server.Server;
+import server.service.UserServer;
 import util.GameRoomUtil;
 /***
 * @Description: 用于服务端后台消息处理
 * @Author: raven
 * @Date: 2020/3/28
 */
+
 @Component
+@Scope("prototype")
 public class HandleMsg implements Runnable{
 	private Socket socket;
-	
+	@Autowired
+	private UserServer userServer;
 	private GameRoom gameRoom = new GameRoom(null);
 	public HandleMsg(){
 	}
 	public  HandleMsg(Socket socket) {
 		this.socket = socket;
-	}		
+	}
+
+	public Socket getSocket() {
+		return socket;
+	}
+
+	public void setSocket(Socket socket) {
+		this.socket = socket;
+	}
+
 	@Override
 	public void run() {
 		try {
+
 			BufferedReader bfReader = new BufferedReader(new InputStreamReader(socket
 					.getInputStream(),"UTF-8"));
 			BufferedWriter bfWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"));
@@ -184,8 +200,76 @@ public class HandleMsg implements Runnable{
 						gameRoom.getUserBuffer2().setUser(user2);
 					}
 					
-				}else if (msgType.equals("getAllUserInfo")) {
+				}else if(msgType.equals("getAllUserInfo")) {
 					sendAllUserInfo();
+				}else if(msgType.equals("addFriend")){
+					JSONObject data = JSON.parseObject(msgData);
+					String fromUserName = data.getString("fromUserName");
+					String toUserName = data.getString("toUserName");
+					UsersBuffer uBuffer = OnlineManage.getUserBufferByUserName(toUserName);
+					data.put("fromNickName",userServer.getUser(fromUserName).getNickName());
+					sendMsgToPlayer(uBuffer,"hasUserAddYou",data.toJSONString());
+				}else if(msgType.equals("addFriendCallBack")){
+					JSONObject msgJSON = JSON.parseObject(msgData);
+					String fromUserName = msgJSON.getString("fromUserName");
+					String toUserName = msgJSON.getString("toUserName");
+					System.out.println("添加回馈："+msgJSON);
+					// 如果对方同意了
+					if(msgJSON.getBoolean("status")){
+						userServer.addFriend(fromUserName,toUserName);
+						sendMsgToPlayer(OnlineManage.getUserBufferByUserName(fromUserName),"addFriendCallBack",msgJSON.getString("toNickName")+"已同意了你的好友添加请求。");
+						List<User> toUserFriendList = userServer.getUserFriendByUserName(msgJSON.getString("toUserName"));
+						List<User> fromUserFriendList = userServer.getUserFriendByUserName(msgJSON.getString("fromUserName"));
+
+						sendMsgToPlayer(OnlineManage.getUserBufferByUserName(fromUserName),"friendUserList",JSON.toJSONString(fromUserFriendList));
+						sendMsgToPlayer(OnlineManage.getUserBufferByUserName(toUserName),"friendUserList",JSON.toJSONString(toUserFriendList));
+
+					}else{
+						sendMsgToPlayer(OnlineManage.getUserBufferByUserName(fromUserName),"addFriendCallBack",msgJSON.getString("toNickName")+"拒绝了你的添加请求！");
+					}
+				}else if (msgType.equals("getSocialContactMsg")){
+
+				// 邀请一起游戏
+				}else if(msgType.equals("invitationGame")){
+					JSONObject data = JSON.parseObject(msgData);
+					String fromUserName = data.getString("fromUserName");
+					String toUserName = data.getString("toUserName");
+					data.put("fromNickName",userServer.getUser(fromUserName).getNickName());
+					// 获取
+					int num2 = OnlineManage.getRoomsByUserName(toUserName);
+
+					if(num2 == 2){
+						sendMsgToPlayer(gameRoom.getUserBuffer1(),"invitationGameCallBack",toUserName+"拒绝了您的游戏邀请！");
+						return;
+					}
+
+					data.put("fromNickName",userServer.getUser(fromUserName).getNickName());
+					//转发给邀请信息给被邀请的人
+					sendMsgToPlayer(OnlineManage.getUserBufferByUserName(toUserName),"invitationGame",data.toJSONString());
+				// 邀请回执状态
+				}else if(msgType.equals("invitationGameCallBack")){
+					JSONObject msgJSON = JSON.parseObject(msgData);
+					String fromUserName = msgJSON.getString("fromUserName");
+					System.out.println("邀请回馈："+msgJSON);
+
+					// 通知 邀请者 邀请状态 如果同意一起游戏 邀请方会主动创建新房间
+					sendMsgToPlayer(OnlineManage.getUserBufferByUserName(fromUserName),"invitationGameCallBack",msgData);
+				// 创建好房间后 邀请 被邀请方进来
+				}else if(msgType.equals("CreateRoomOK")){
+					JSONObject msgJSON = JSON.parseObject(msgData);
+					String toUserName = msgJSON.getString("toUserName");
+					String fromUserName = msgJSON.getString("fromUserName");
+					// 拿到对方的输出流 发给对方房间创建好了  让他加进来
+					sendMsgToPlayer(OnlineManage.getUserBufferByUserName(toUserName),"CreateRoomOKAddRoom",fromUserName);
+
+				// 被邀请方接收到已经创建好了的信息，然后通知客户端，让他主动去请求加入这个房间
+				}else if(msgType.equals("CreateRoomOKAddRoom")){
+					sendMsgToPlayer(gameRoom.getUserBuffer1(),"CreateRoomOKAddRoom",msgData);
+				// 获取自己的好友列表
+				}else if(msgType.equals("getFriendUserList")){
+					List<User> friendList = userServer.getUserFriendByUserName(gameRoom.getUserBuffer1().getUser().getUserName());
+					sendMsgToPlayer(gameRoom.getUserBuffer1(),"friendUserList",JSON.toJSONString(friendList));
+
 				}
 				
 			} catch (IOException e) {	
@@ -210,10 +294,11 @@ public class HandleMsg implements Runnable{
 	*/
 	private void sendAllUserInfo() {
 		List<List> users = new ArrayList<>();
-		List<User> user = new ArrayList<>();
+		List<JSONObject> user = new ArrayList<>();
 		OnlineManage.onlineUsers.forEach(us->{
+			JSONObject line = JSON.parseObject(JSONObject.toJSONString(us.getUser()));
 
-			user.add(us.getUser());
+			user.add(line);
 			users.add(user);
 		});
 		OnlineManage.onlineUsers.forEach(u->{

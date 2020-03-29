@@ -467,6 +467,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 			String status= HttpConnectUtil.requestHTTP(BeginWindow.webHost +"/update", map, "get");
 			System.out.println("上传状态："+(status.equals("1")?"上传成功":"上传失败"));
 			GameRoomUtil.SendMsgToServer(chessBoard, "updateUserInfo", null);
+			GameRoomUtil.SendMsgToServer(chessBoard, "getFriendUserList", null);
 		}).start();
 	}
 	

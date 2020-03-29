@@ -206,8 +206,6 @@ class WindowEvent implements WindowListener{
 		if(chessBoard.RoomType.equals("CreateRoom")||chessBoard.RoomType.equals("ADDRoom")) {
 			
 			GameRoomUtil.SendMsgToServer(chessBoard,"LeaveRoom",null);
-			
-			//chessBoard.setVisible(false);
 			chessBoard.dispose();
 			LoginFream.room.setVisible(true);
 			GameRoomUtil.stopBackgroundMusic();//停止播放音乐

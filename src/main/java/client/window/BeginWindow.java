@@ -52,6 +52,8 @@ public class BeginWindow extends JFrame{
 	static public Socket socket = null;
 	// 登录对象
 	public boolean loginstaus = false;
+
+	public static LoginFream loginFream;
 	public MyPlane myplane;
 	//static public Room room;
 	public BeginWindow(){
@@ -372,7 +374,8 @@ class MyPlane extends JPanel implements MouseListener{
 			return;
 		}
 		// 登录窗口
-		new LoginFream(beginWindow).setVisible(true);
+		beginWindow.loginFream = new LoginFream(beginWindow);
+		beginWindow.loginFream.setVisible(true);
 		beginWindow.setVisible(false);
 	}
 

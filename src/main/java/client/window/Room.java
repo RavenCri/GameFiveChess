@@ -6,7 +6,9 @@ import java.awt.Image;
 import java.awt.event.*;
 import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.*;
@@ -20,6 +22,7 @@ import client.handle.HandleMsgThread;
 import client.handle.ReceiveMsgThread;
 import client.plane.GamePlane;
 import client.plane.RoomPlane;
+import common.pojo.User;
 import util.GameRoomUtil;
 /***
  * 
@@ -62,6 +65,8 @@ public class Room extends JFrame {
 	public static DefaultTableModel tableModel;
 	public static Object[][] cellData;
 	public static String[] columnNames = {"账号","昵称", "积分", "胜率"};
+
+	public static List<JSONObject> userfirends = new ArrayList<>();
 	public Room(BeginWindow priwid) throws InterruptedException {
 		setLayout(null);
 		//大小不变
@@ -103,11 +108,11 @@ public class Room extends JFrame {
 		chatRigthPlane.setLayout(null);
 		chatRigthPlane.setSize(450, 1000);
 		chatRigthPlane.setLocation(800, 0);
-
-		//初始化大厅游戏人员
-		initUsersTable();
 		// 初始化社交功能
 		initSocialContact();
+		//初始化大厅游戏人员
+		initUsersTable();
+
 		// 初始化聊天面板的滚动条
 		initChatPanle();
 
@@ -127,6 +132,7 @@ public class Room extends JFrame {
 		firiendList.setForeground(Color.black);
 		chatRigthPlane.add(msgButtton);
 		chatRigthPlane.add(firiendList);
+		GameRoomUtil.SendMsgToServer(this, "getFriendUserList","");
 	}
 
 	/***
@@ -272,12 +278,32 @@ public class Room extends JFrame {
 									JOptionPane.showMessageDialog(null, "不能对自己进行操作哦");
 									return;
 								}
+
 								if(type.equals("添加")) {
-									JOptionPane.showMessageDialog(null, "已添加用户："+nickname+"为好友！");
-									System.out.println("您添加了"+gameUsersTable.getValueAt(row,0));
+									// forEach方法的return 相当于continue
+									for (JSONObject u : userfirends) {
+
+										if(u.getString("userName").equals(username)){
+											JOptionPane.showMessageDialog(null, nickname+"已经是您的好友了！");
+											return;
+										}
+									}
+
+									JSONObject send = new JSONObject();
+									send.put("fromUserName",BeginWindow.userPlayer.getUserName());
+									send.put("toNickName",nickname);
+									send.put("toUserName",username);
+									GameRoomUtil.SendMsgToServer(null, "addFriend",send.toJSONString());
+									//JOptionPane.showMessageDialog(null, "已向用户："+nickname+"发送添加请求！");
+									System.out.println("已发送添加请求"+gameUsersTable.getValueAt(row,0));
 								}else if(type.equals("邀请")){
-									JOptionPane.showMessageDialog(null, "已邀请用户："+nickname);
-									System.out.println("您邀请了"+gameUsersTable.getValueAt(row,0));
+									JSONObject send = new JSONObject();
+									send.put("fromUserName",BeginWindow.userPlayer.getUserName());
+									send.put("toNickName",nickname);
+									send.put("toUserName",username);
+									GameRoomUtil.SendMsgToServer(null, "invitationGame",send.toJSONString());
+									//JOptionPane.showMessageDialog(null, "已邀请用户："+nickname+"，请稍后....");
+									System.out.println("已邀请用户："+gameUsersTable.getValueAt(row,0)+"，请稍后....");
 								}
 							}
 						}

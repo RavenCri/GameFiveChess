@@ -65,7 +65,7 @@ public class HandleMsgThread extends Thread{
 	* @Author: raven
 	* @Date: 2020/3/28
 	*/
-	public static void ResultMsg(String msgType ,String msgData) {
+	public static void ResultMsg(String msgType ,String msgData) throws InterruptedException {
 		GameRoomUtil gameRoomUtil = new GameRoomUtil();
 		// 关闭游戏房间
 		if(msgType.equals("CloseGameRoom") ) {
@@ -86,7 +86,7 @@ public class HandleMsgThread extends Thread{
 			ChessBoard.gamepanel.repaint();
 			ChessBoard.jt.append("系统："+ChessBoard.gamepanel.dateFormat.format(new Date())+"\r\n"+"   你加入了"+ChessBoard.gamepanel.gameplayer2.getNickName()+"的房间\n");
 			//然后设置当前窗口不可见
-			LoginFream.room.setVisible(false);
+			//LoginFream.room.setVisible(false);
 		// 加入游戏房间者信息
 		}else if(msgType.equals("AddRoomUserInfo")) {
 			User addRoomUser = JSONObject.toJavaObject(JSONObject.parseObject(msgData), User.class);
@@ -100,15 +100,17 @@ public class HandleMsgThread extends Thread{
 		// 创建房间成功
 		}else if (msgType.equals("CreateRoomSuccess")) {
 			//然后设置当前窗口不可见
-			LoginFream.room.setVisible(false);
+			//LoginFream.room.setVisible(false);
 			//棋盘窗口
-			Room.chessBoard = new ChessBoard(LoginFream.room,"CreateRoom",BeginWindow.userPlayer);;
+			Room.chessBoard = new ChessBoard(LoginFream.room,"CreateRoom",BeginWindow.userPlayer);
 		// 离开房间
 		}else if(msgType.equals("LeaveRoom")) {
 			
-			
-			ChessBoard.jt.append("系统："+ChessBoard.gamepanel.dateFormat.format(new Date())+"\r\n"+"   "+ChessBoard.gamepanel.gameplayer2.getNickName()+"离开了房间\n");
-			ChessBoard.gamepanel.gameplayer2 = null;
+			if(ChessBoard.gamepanel.gameplayer2 !=null){
+				ChessBoard.jt.append("系统："+ChessBoard.gamepanel.dateFormat.format(new Date())+"\r\n"+"   "+ChessBoard.gamepanel.gameplayer2.getNickName()+"离开了房间\n");
+				ChessBoard.gamepanel.gameplayer2 = null;
+			}
+
 			GamePlane.chessBoard.RoomType = "CreateRoom";
 			ChessBoard.gamepanel.repaint();
 		// 房间棋子颜色类型
@@ -296,12 +298,12 @@ public class HandleMsgThread extends Thread{
 				Room.cellData[i][2]=us.getJSONObject(i).getString("integral");
 				Room.cellData[i][3]=Double.parseDouble(us.getJSONObject(i).getString("winingProbability"))*100+"%";
 			}
-			for (int i = 0; i < Room.cellData.length; i++) {
+			/*for (int i = 0; i < Room.cellData.length; i++) {
 				System.out.println(Room.cellData[i][0]);
 				System.out.println(Room.cellData[i][1]);
 				System.out.println(Room.cellData[i][2]);
 				System.out.println(Room.cellData[i][3]);
-			}
+			}*/
 			Room.tableModel =  new DefaultTableModel(Room.cellData , Room.columnNames);
 
 			Room.gameUsersTable.setModel(Room.tableModel);
@@ -315,6 +317,89 @@ public class HandleMsgThread extends Thread{
 					setMaxWidth( 0 );
 			Room.gameUsersTable.getTableHeader().getColumnModel().getColumn( 0 ).
 					setMinWidth( 0 );
+		}else if( msgType.equals("hasUserAddYou")){
+			JSONObject data = JSON.parseObject(msgData);
+			String nickname = data.getString("fromNickName");
+			String username = data.getString("fromUserName");
+			int i =JOptionPane.showConfirmDialog(Room.RoomsLeftPlane, String.format("%s(%s)请求加您为好友，是否同意？",nickname,username),"社交信息",2);
+
+			if(i==0) {
+
+				data.put("status",true);
+
+				System.out.println("您同意了");
+			}else {
+				data.put("status",false);
+				System.out.println("您不同意");
+			}
+
+			GameRoomUtil.SendMsgToServer(LoginFream.room,"addFriendCallBack",data.toJSONString());
+		}else if( msgType.equals("addFriendCallBack")){
+
+			JOptionPane.showMessageDialog(Room.RoomsLeftPlane, msgData);
+
+		}else if(msgType.equals("invitationGame")){
+			JSONObject data = JSON.parseObject(msgData);
+			String nickname = data.getString("fromNickName");
+			String username = data.getString("fromUserName");
+			int i =JOptionPane.showConfirmDialog(Room.RoomsLeftPlane, String.format("%s(%s)邀请您一起游戏，是否前往？",nickname,username),"邀请游戏",2);
+
+
+			if(i==0) {
+				data.put("status",true);
+				// 如果已经创建了游戏房间
+				if(Room.chessBoard != null && Room.chessBoard.isVisible() ){
+
+					GameRoomUtil.SendMsgToServer(LoginFream.room.chessBoard,"LeaveRoom",null);
+					LoginFream.room.chessBoard.dispose();
+					GameRoomUtil.stopBackgroundMusic();//停止播放音乐
+					ChessBoard.jt.setText("");
+
+					ChessBoard.gamepanel.zhunbei = false;
+					ChessBoard.gamepanel.kaishi = false;
+					ChessBoard.gamepanel.chessPoint.clear();
+				}
+
+				System.out.println("您同意了");
+			}else {
+				data.put("status",false);
+				System.out.println("您不同意");
+			}
+
+			GameRoomUtil.SendMsgToServer(LoginFream.room,"invitationGameCallBack",data.toJSONString());
+			//邀请状态
+		}else if(msgType.equals("invitationGameCallBack")){
+
+			if(JSONObject.isValidObject(msgData)){
+				JSONObject data = JSON.parseObject(msgData);
+				if(!data.getBoolean("status")){
+					JOptionPane.showMessageDialog(Room.RoomsLeftPlane, data.getString("toNickName")+"拒绝了你的游戏邀请！");
+				}else{
+					// 先尝试离开自己的房间
+					if(Room.chessBoard != null && Room.chessBoard.isVisible() ){
+						GameRoomUtil.SendMsgToServer(LoginFream.room.chessBoard,"LeaveRoom",null);
+						LoginFream.room.chessBoard.dispose();
+						GameRoomUtil.stopBackgroundMusic();//停止播放音乐
+						ChessBoard.jt.setText("");
+
+						ChessBoard.gamepanel.zhunbei = false;
+						ChessBoard.gamepanel.kaishi = false;
+						ChessBoard.gamepanel.chessPoint.clear();
+					}
+					// 再创建新房间
+					GameRoomUtil.SendMsgToServer(LoginFream.room,"CreateGameRoom",null);
+					// 通知创建好了
+					GameRoomUtil.SendMsgToServer(LoginFream.room,"CreateRoomOK",data.toJSONString());
+				}
+			}else{
+				JOptionPane.showMessageDialog(Room.RoomsLeftPlane, msgData);
+			}
+
+		}else if(msgType.equals("CreateRoomOKAddRoom")){
+			GameRoomUtil.SendMsgToServer(LoginFream.room,"AddGameHomeOwner",msgData);
+		}else if(msgType.equals("friendUserList")){
+			System.out.println("好友列表："+msgData);
+			Room.userfirends = (List<JSONObject>) JSONObject.parse(msgData);
 		}
 		ChessBoard.gamepanel.repaint();
 	}
