@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
@@ -98,6 +101,7 @@ public class HandleMsg implements Runnable{
 							msg.put("NotifyType","login");
 							msg.put("who",gameRoom.getUserBuffer1().getUser().getNickName());
 							sendMsgToAllPlayers("systemNotify", msg.toJSONString());
+
 						}							
 					}
 				}
@@ -180,6 +184,8 @@ public class HandleMsg implements Runnable{
 						gameRoom.getUserBuffer2().setUser(user2);
 					}
 					
+				}else if (msgType.equals("getAllUserInfo")) {
+					sendAllUserInfo();
 				}
 				
 			} catch (IOException e) {	
@@ -195,6 +201,27 @@ public class HandleMsg implements Runnable{
 		
 		System.err.println("服务端一条循环线程终止");
 	}
+	/***
+	* @Description: 发送所有在线用户信息
+	* @Param: []
+	* @return: void
+	* @Author: raven
+	* @Date: 2020/3/29
+	*/
+	private void sendAllUserInfo() {
+		List<List> users = new ArrayList<>();
+		List<User> user = new ArrayList<>();
+		OnlineManage.onlineUsers.forEach(us->{
+
+			user.add(us.getUser());
+			users.add(user);
+		});
+		OnlineManage.onlineUsers.forEach(u->{
+			sendMsgToPlayer(u,"AllUserInfo", JSON.toJSONString(users));
+		});
+
+	}
+
 	/***
 	* @Description: 发送消息给所有玩家
 	* @Param: [msgType, msgData]
@@ -312,13 +339,14 @@ public class HandleMsg implements Runnable{
 		msg.put("NotifyType","logout");
 		msg.put("who",gameRoom.getUserBuffer1().getUser().getNickName());
 		sendMsgToAllPlayers("systemNotify", msg.toJSONString());
-		
+		sendAllUserInfo();
 	}
 	private synchronized void IOEX() {
 		if(socket.isConnected()) {
 			if(gameRoom.getUserBuffer2() != null) {
 				System.out.println("当前用户下线了。"+gameRoom.getUserBuffer1().getUser().getNickName());
 				sendMsgToPlayer(gameRoom.getUserBuffer2(), "BreakGame", null);
+				sendAllUserInfo();
 			}
 		}
 		

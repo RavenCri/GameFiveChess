@@ -9,17 +9,16 @@ import common.pojo.User;
 
 @Mapper
 public interface UserMapper {
-	@Insert("insert into user(userName,passWord,winingProbability,gameBout,nickName,winBout) values(#{userName},#{passWord}"
-			+",#{winingProbability},#{gameBout},#{nickName},#{winBout})")
+	@Insert("insert into user(id,userName,passWord,winingProbability,gameBout,nickName,winBout,integral) values(0,#{userName},#{passWord}"
+			+",#{winingProbability},#{gameBout},#{nickName},#{winBout},#{integral})")
 	void addUser(User user);
 	@Select("select *from user  where userName=#{userName} and passWord=#{passWord}")
 	User userLogin(User user);
 	
-	@Update("update user set winingProbability=#{winingProbability},gameBout=#{gameBout},winBout=#{winBout} where userName=#{userName}")
+	@Update("update user set winingProbability=#{winingProbability},gameBout=#{gameBout},winBout=#{winBout},integral=#{integral} where userName=#{userName}")
 	int update(User user);
 	
-	@Select("select *from user  where userName=#{userName}")
-	User exituser(String userName);
+
 	
 	@Select("select *from user where userName=#{userName}")
 	User getUserByUserName(String userName);

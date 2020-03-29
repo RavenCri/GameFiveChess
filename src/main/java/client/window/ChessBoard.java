@@ -190,6 +190,7 @@ class WindowEvent implements WindowListener{
 				
 				GameRoomUtil.SendMsgToServer(chessBoard.parFrame,"BreakGame",null);
 				ChessBoard.gamepanel.gameplayer2.setWinBoutAddOne();
+				ChessBoard.gamepanel.gameplayer1.setIntegral(ChessBoard.gamepanel.gameplayer1.getIntegral()-20);
 				ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
 				
 				ChessBoard.gamepanel.gameplayer2 = null;

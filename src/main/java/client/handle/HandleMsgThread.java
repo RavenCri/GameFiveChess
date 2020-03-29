@@ -2,9 +2,15 @@ package client.handle;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import common.pojo.User;
@@ -123,14 +129,14 @@ public class HandleMsgThread extends Thread{
 				
 				Room.roomList = JSONObject.parseObject(msgData).getJSONArray("rooms");
 			}
-			Room.roomPlane.removeMouseListener(RoomPlane.mous);
+			Room.RoomsLeftPlane.removeMouseListener(RoomPlane.mous);
 			//不要忘记这里的清空 不然鼠标监听器没效果
 			RoomPlane.hasplayer.clear();
-			Room.roomPlane.repaint();
+			Room.RoomsLeftPlane.repaint();
 			
 			
-			RoomPlane.mous = new MouseAdapterOfRoomPlane(Room.roomPlane);
-			Room.roomPlane.addMouseListener(RoomPlane.mous);
+			RoomPlane.mous = new MouseAdapterOfRoomPlane(Room.RoomsLeftPlane);
+			Room.RoomsLeftPlane.addMouseListener(RoomPlane.mous);
 		// 游戏玩家离开
 		}else if(msgType.equals("GamePlayerLingout")){
 			if(!GamePlane.chessBoard.RoomType.equals("CreateRoom")) {
@@ -188,7 +194,7 @@ public class HandleMsgThread extends Thread{
 		}else if(msgType.equals("BreakGame")) {
 			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方退出了房间，你赢的了这场比赛！");
 			ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();
-			
+			ChessBoard.gamepanel.gameplayer1.setIntegral(ChessBoard.gamepanel.gameplayer1.getIntegral()+20);
 			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
 			
 			gameRoomUtil.palyothermusic("sound/winmusic.mp3");
@@ -197,6 +203,7 @@ public class HandleMsgThread extends Thread{
 			
 			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "你输了比赛哦~");
 			ChessBoard.gamepanel.gameplayer2.setWinBoutAddOne();
+			ChessBoard.gamepanel.gameplayer1.setIntegral(ChessBoard.gamepanel.gameplayer1.getIntegral()-20);
 			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
 		//接收对方棋子位置
 		}else if(msgType.equals("ChessBorldLocation")) {
@@ -222,6 +229,7 @@ public class HandleMsgThread extends Thread{
 			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方认输了，你很棒哦");
 			ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();
 			gameRoomUtil.palyothermusic("sound/winmusic.mp3");
+			ChessBoard.gamepanel.gameplayer1.setIntegral(ChessBoard.gamepanel.gameplayer1.getIntegral()+20);
 			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);	
 		// 和棋
 		}else if (msgType.equals("heqi")) {
@@ -231,6 +239,7 @@ public class HandleMsgThread extends Thread{
 					ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();
 					ChessBoard.gamepanel.gameplayer2.setWinBoutAddOne();
 					JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方同意了和棋");
+
 					//游戏完成所做的事
 					ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);	
 
@@ -273,6 +282,39 @@ public class HandleMsgThread extends Thread{
 					GameRoomUtil.SendMsgToServer(GamePlane.chessBoard,"huiqi","0");
 				}
 			}
+		}else if(msgType.equals("AllUserInfo")){
+
+			List<List> users = (List<List>) JSONObject.parse(msgData);
+			Room.cellData = new String[users.size()][4];
+
+			//System.out.println(JSON.toJSON(users));
+
+			JSONArray us = (JSONArray) users.get(0);
+			for (int i = 0; i < us.size(); i++) {
+				Room.cellData[i][0]=us.getJSONObject(i).getString("userName");
+				Room.cellData[i][1]=us.getJSONObject(i).getString("nickName");
+				Room.cellData[i][2]=us.getJSONObject(i).getString("integral");
+				Room.cellData[i][3]=Double.parseDouble(us.getJSONObject(i).getString("winingProbability"))*100+"%";
+			}
+			for (int i = 0; i < Room.cellData.length; i++) {
+				System.out.println(Room.cellData[i][0]);
+				System.out.println(Room.cellData[i][1]);
+				System.out.println(Room.cellData[i][2]);
+				System.out.println(Room.cellData[i][3]);
+			}
+			Room.tableModel =  new DefaultTableModel(Room.cellData , Room.columnNames);
+
+			Room.gameUsersTable.setModel(Room.tableModel);
+			//隐藏账号列
+			TableColumn columnOne = Room.gameUsersTable.getColumnModel().getColumn(0);
+			columnOne.setWidth( 0 );
+			columnOne.setPreferredWidth( 0 );
+			columnOne.setMaxWidth( 0 );
+			columnOne.setMinWidth( 0 );
+			Room.gameUsersTable.getTableHeader().getColumnModel().getColumn( 0 ).
+					setMaxWidth( 0 );
+			Room.gameUsersTable.getTableHeader().getColumnModel().getColumn( 0 ).
+					setMinWidth( 0 );
 		}
 		ChessBoard.gamepanel.repaint();
 	}

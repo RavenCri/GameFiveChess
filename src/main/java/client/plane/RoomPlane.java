@@ -69,11 +69,11 @@ public class RoomPlane extends JPanel{
 		//super.paint(g);
 		//setBackground(Color.white);
 		nameMap.clear();
-		BufferedImage bi = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_BGR);
+		BufferedImage bi = new BufferedImage(1200, 1000, BufferedImage.TYPE_INT_BGR);
 		Graphics2D g2 = bi.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);  
 		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,RenderingHints.VALUE_STROKE_DEFAULT); 
-		g2.drawImage(bgImg.getImage(), 0, 0,  800, 800, bgImg.getImageObserver());
+		g2.drawImage(bgImg.getImage(), 0, 0,  1200, 1000, bgImg.getImageObserver());
 		g2.setColor(Color.green);
 		int index = 0;
 		if(Room.emptyRoom) {
@@ -146,7 +146,7 @@ public class RoomPlane extends JPanel{
 		 *  点击效果怎么实现 以及 房间销毁 取消点击事件   
 		 *  	更好的不是放在paint方法里 而是放入 刷新房间点击事件里 如果房间信息改变 那么重新构造新的监听器 这样写 太不好了 
 		 */
-		
+
 	}
 
 	

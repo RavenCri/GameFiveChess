@@ -10,10 +10,12 @@ public class UserServer {
 	@Autowired
 	UserMapper userMapper ;
 	public boolean addUser(User user) {
-		User user2 = userMapper.exituser(user.getUserName());
+		User user2 = userMapper.getUserByUserName(user.getUserName());
 		if(user2!=null) {
 			return false;
 		}else {
+			// 初试积分1000
+			user.setIntegral(1000);
 			userMapper.addUser(user);
 			return true;
 		}

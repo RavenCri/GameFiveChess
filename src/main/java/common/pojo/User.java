@@ -5,6 +5,7 @@ package common.pojo;
 * @Date: 2019/12/28
 */
 public class User {
+	private int id;
 	//用户名
 	private String userName;
 	//用户密码
@@ -17,9 +18,20 @@ public class User {
 	private int gameBout;
 	//赢得总局数
 	private int winBout;
+	private int integral;
 	public User() {
 		
 	}
+
+
+	public int getIntegral() {
+		return integral;
+	}
+
+	public void setIntegral(int integral) {
+		this.integral = integral;
+	}
+
 	public String getUserName() {
 		return userName;
 	}
@@ -63,14 +75,17 @@ public class User {
 		this.passWord = passWord;
 		this.nickName = nickName;
 	}
-	public User(String userName, String passWord, String nickName, double winingProbability, int gameBout) {
-		super();
+
+	public User(String userName, String passWord, String nickName, double winingProbability, int gameBout, int winBout, int integral) {
 		this.userName = userName;
 		this.passWord = passWord;
 		this.nickName = nickName;
 		this.winingProbability = winingProbability;
 		this.gameBout = gameBout;
+		this.winBout = winBout;
+		this.integral = integral;
 	}
+
 	public void setWinBoutAddOne() {
 		this.winBout++;
 	}

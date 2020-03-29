@@ -6,6 +6,7 @@ package client;
 
 
 import client.window.BeginWindow;
+import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 
@@ -21,13 +22,19 @@ public class GameClient {
 
 
 	public static void main(String[] args) throws Exception {
-		//设置皮肤
-		UIManager.put("RootPane.setupButtonVisible", false);
-		org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
-		// 启动窗游戏口
+		init();
 		beginWindow= new BeginWindow();
 		beginWindow.setVisible(false);
 		beginWindow.setVisible(true);
+	}
+
+	private static void init() throws Exception {
+		//设置皮肤
+		UIManager.put("RootPane.setupButtonVisible", false);
+		org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+		// 关闭半透明效果
+		BeautyEyeLNFHelper.translucencyAtFrameInactive = false;
+
 	}
 }
 /*

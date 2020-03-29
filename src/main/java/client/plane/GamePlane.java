@@ -154,7 +154,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 
 	@Override
 	public void paint(Graphics g) {
-		super.paint(g);
+
 		BufferedImage bf = new BufferedImage(GameWidth, GameHeight, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = bf.createGraphics();
 		
@@ -313,6 +313,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 			if(i==0) {
 				GameRoomUtil.SendMsgToServer(chessBoard, "AdmitDefeat",null);
 				gameplayer2.setWinBoutAddOne();
+				ChessBoard.gamepanel.gameplayer1.setIntegral(ChessBoard.gamepanel.gameplayer1.getIntegral()-20);
 				GameWinAfter(this);		
 			}
 		
@@ -461,6 +462,7 @@ public class GamePlane extends JSplitPane implements MouseListener{
 			map.put("userName", gameplayer1.getUserName());
 			map.put("winingProbability", gameplayer1.getWiningProbability()+"");
 			map.put("winBout", gameplayer1.getWinBout()+"");
+			map.put("integral", gameplayer1.getIntegral()+"");
 			map.put("gameBout", gameplayer1.getGameBout()+"");
 			String status= HttpConnectUtil.requestHTTP(BeginWindow.webHost +"/update", map, "get");
 			System.out.println("上传状态："+(status.equals("1")?"上传成功":"上传失败"));
@@ -751,6 +753,7 @@ class xiaqiThread extends Thread{
 					JOptionPane.showMessageDialog(gmplane, "你赢得了比赛！！");
 					ChessBoard.jt.append("系统："+GamePlane.dateFormat.format(new Date())+"\n   你赢得了比赛！！\n");
 					gmplane.gameplayer1.setWinBoutAddOne();
+					ChessBoard.gamepanel.gameplayer1.setIntegral(ChessBoard.gamepanel.gameplayer1.getIntegral()+20);
 					gmplane.GameWinAfter(gmplane);
 					
 					gameRoomUtil.palyothermusic("sound/mousedown.mp3");
