@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import client.window.ChessBoard;
 import client.window.LoginFream;
+import server.pojo.GameRoom;
 import util.GameRoomUtil;
 
 public class MouseAdapterOfRoomPlane extends MouseAdapter{
@@ -79,6 +80,10 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 							gameRoomUtil.palyothermusic("sound/mousedown.mp3");
 							if(roomPlane.nameMap.get(""+i).equals(roomPlane.room.priwid.userPlayer.getUserName())){
 								JOptionPane.showMessageDialog(roomPlane, "你不能自己加入自己~");
+								return;
+							}
+							if(ChessBoard.gamepanel.kaishi){
+								JOptionPane.showMessageDialog(roomPlane, "当前游戏已经开始了，暂时无法加入其他对局哦");
 								return;
 							}
 							if(roomPlane.room.chessBoard.gamepanel.gameplayer2!=null){

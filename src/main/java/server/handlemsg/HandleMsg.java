@@ -238,10 +238,10 @@ public class HandleMsg implements Runnable{
 					// 获取
 					int num2 = OnlineManage.getRoomsByUserName(toUserName);
 
-					if(num2 == 2){
-						sendMsgToPlayer(gameRoom.getUserBuffer1(),"invitationGameCallBack",toUserName+"拒绝了您的游戏邀请！");
+					/*if(num2 == 2){
+						sendMsgToPlayer(gameRoom.getUserBuffer1(),"invitationGameCallBack",toUserName+"已在房间中，且有队友了~");
 						return;
-					}
+					}*/
 
 					data.put("fromNickName",userServer.getUser(fromUserName).getNickName());
 					//转发给邀请信息给被邀请的人

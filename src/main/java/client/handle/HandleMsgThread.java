@@ -95,7 +95,7 @@ public class HandleMsgThread extends Thread{
 			
 			ChessBoard.gamepanel.repaint();
 			ChessBoard.jt.append("系统："+GamePlane.dateFormat.format(new Date())+"\r\n"+"   "+ChessBoard.gamepanel.gameplayer2.getNickName()+"加入了您的房间\n");
-			
+			//发送自己棋子的颜色
 			GameRoomUtil.SendMsgToServer(LoginFream.room, "ChessColor", GamePlane.MyChessColor);
 		// 创建房间成功
 		}else if (msgType.equals("CreateRoomSuccess")) {
@@ -115,7 +115,9 @@ public class HandleMsgThread extends Thread{
 			ChessBoard.gamepanel.repaint();
 		// 房间棋子颜色类型
 		}else if(msgType.equals("ChessColor")){
+			// 进入房间棋子颜色默认是黑色的  如果房主的颜色为黑色 ，那么改变自己棋子的颜色
 			if(msgData.equals("black")) {
+				System.out.println("房主的颜色为黑色我要变白啊");
 				GameRoomUtil.ChangeMyChessColor();
 				ChessBoard.gamepanel.repaint();
 			}
@@ -194,12 +196,15 @@ public class HandleMsgThread extends Thread{
 			Room.jt.setCaretPosition(Room.jt.getDocument().getLength());
 		//强行退出比赛
 		}else if(msgType.equals("BreakGame")) {
-			JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方退出了房间，你赢的了这场比赛！");
-			ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();
-			ChessBoard.gamepanel.gameplayer1.setIntegral(ChessBoard.gamepanel.gameplayer1.getIntegral()+20);
-			ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
-			
-			gameRoomUtil.palyothermusic("sound/winmusic.mp3");
+			if(ChessBoard.gamepanel.kaishi){
+				JOptionPane.showMessageDialog(ChessBoard.gamepanel, "对方退出了房间，你赢的了这场比赛！");
+				ChessBoard.gamepanel.gameplayer1.setWinBoutAddOne();
+				ChessBoard.gamepanel.gameplayer1.setIntegral(ChessBoard.gamepanel.gameplayer1.getIntegral()+20);
+				ChessBoard.gamepanel.GameWinAfter(ChessBoard.gamepanel);
+
+				gameRoomUtil.palyothermusic("sound/winmusic.mp3");
+			}
+
 		// 输了比赛
 		}else if (msgType.equals("YouLose")) {
 			
@@ -342,28 +347,35 @@ public class HandleMsgThread extends Thread{
 			JSONObject data = JSON.parseObject(msgData);
 			String nickname = data.getString("fromNickName");
 			String username = data.getString("fromUserName");
-			int i =JOptionPane.showConfirmDialog(Room.RoomsLeftPlane, String.format("%s(%s)邀请您一起游戏，是否前往？",nickname,username),"邀请游戏",2);
+			// 如果对局没开始
+			if(!Room.chessBoard.gamepanel.kaishi){
+				int i =JOptionPane.showConfirmDialog(Room.RoomsLeftPlane, String.format("%s(%s)邀请您一起游戏，是否前往？",nickname,username),"邀请游戏",2);
+				if(i==0) {
+					data.put("status",true);
+					// 如果已经创建了游戏房间
+					if(Room.chessBoard != null && Room.chessBoard.isVisible() ){
 
+						GameRoomUtil.SendMsgToServer(LoginFream.room.chessBoard,"LeaveRoom",null);
+						LoginFream.room.chessBoard.dispose();
+						GameRoomUtil.stopBackgroundMusic();//停止播放音乐
+						ChessBoard.jt.setText("");
 
-			if(i==0) {
-				data.put("status",true);
-				// 如果已经创建了游戏房间
-				if(Room.chessBoard != null && Room.chessBoard.isVisible() ){
+						ChessBoard.gamepanel.zhunbei = false;
+						ChessBoard.gamepanel.kaishi = false;
+						ChessBoard.gamepanel.chessPoint.clear();
 
-					GameRoomUtil.SendMsgToServer(LoginFream.room.chessBoard,"LeaveRoom",null);
-					LoginFream.room.chessBoard.dispose();
-					GameRoomUtil.stopBackgroundMusic();//停止播放音乐
-					ChessBoard.jt.setText("");
+					}
 
-					ChessBoard.gamepanel.zhunbei = false;
-					ChessBoard.gamepanel.kaishi = false;
-					ChessBoard.gamepanel.chessPoint.clear();
+					System.out.println("您同意了");
+				}else {
+					data.put("status",false);
+					data.put("msg","，拒绝了您的邀请");
+					System.out.println("您不同意");
+
 				}
-
-				System.out.println("您同意了");
-			}else {
+			}else{
 				data.put("status",false);
-				System.out.println("您不同意");
+				data.put("msg","对局已开始无法邀请对方");
 			}
 
 			GameRoomUtil.SendMsgToServer(LoginFream.room,"invitationGameCallBack",data.toJSONString());
@@ -373,7 +385,7 @@ public class HandleMsgThread extends Thread{
 			if(JSONObject.isValidObject(msgData)){
 				JSONObject data = JSON.parseObject(msgData);
 				if(!data.getBoolean("status")){
-					JOptionPane.showMessageDialog(Room.RoomsLeftPlane, data.getString("toNickName")+"拒绝了你的游戏邀请！");
+					JOptionPane.showMessageDialog(Room.RoomsLeftPlane, data.getString("toNickName")+data.getString("msg"));
 				}else{
 					// 先尝试离开自己的房间
 					if(Room.chessBoard != null && Room.chessBoard.isVisible() ){

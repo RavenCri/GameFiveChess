@@ -214,7 +214,7 @@ class WindowEvent implements WindowListener{
 			ChessBoard.gamepanel.zhunbei = false;
 			ChessBoard.gamepanel.kaishi = false;
 			ChessBoard.gamepanel.chessPoint.clear();
-		
+
 
 		}
 
