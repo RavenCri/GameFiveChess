@@ -5,8 +5,10 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JOptionPane;
 
+import client.window.BeginWindow;
 import client.window.ChessBoard;
 import client.window.LoginFream;
+import client.window.Room;
 import server.pojo.GameRoom;
 import util.GameRoomUtil;
 
@@ -24,6 +26,13 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 
 			//x -30  Y-40是矩形的左上角的点
 			if(roomPlane.p.getX()>=100-30&&roomPlane.p.getX()<=100-30+roomPlane.rectwidth&&roomPlane.p.getY()>=roomPlane.lasty-40&&roomPlane.p.getY()<=roomPlane.lasty-40+roomPlane.rectheight) {
+				if(ChessBoard.gamepanel.kaishi){
+					JOptionPane.showMessageDialog(roomPlane, "游戏已经开始了，无法创建新的房间");
+					return;
+				}else if(Room.chessBoard != null && Room.chessBoard.isVisible()){
+					JOptionPane.showMessageDialog(roomPlane, "您已经加入一个游戏房间了，如果你要创建新房间请先退出房间。");
+					return;
+				}
 				gameRoomUtil.palyothermusic("sound/mousedown.mp3");
 				//给服务端发送创建房间消息
 				GameRoomUtil.SendMsgToServer(roomPlane.room,"CreateGameRoom",null);
@@ -95,6 +104,9 @@ public class MouseAdapterOfRoomPlane extends MouseAdapter{
 								ChessBoard.gamepanel.zhunbei = false;
 								ChessBoard.gamepanel.kaishi = false;
 								ChessBoard.gamepanel.chessPoint.clear();
+							}else if(roomPlane.room.chessBoard !=null && roomPlane.room.chessBoard.isVisible()){
+								JOptionPane.showMessageDialog(roomPlane, "请先退出当前房间再加入房间哦");
+								return;
 							}
 							//namemap存放的是当前页房主的所有唯一账号
 							GameRoomUtil.SendMsgToServer(roomPlane.room,"AddGameHomeOwner",roomPlane.nameMap.get(""+i));

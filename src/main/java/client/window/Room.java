@@ -297,6 +297,10 @@ public class Room extends JFrame {
 									//JOptionPane.showMessageDialog(null, "已向用户："+nickname+"发送添加请求！");
 									System.out.println("已发送添加请求"+gameUsersTable.getValueAt(row,0));
 								}else if(type.equals("邀请")){
+									if(ChessBoard.gamepanel.kaishi){
+										JOptionPane.showMessageDialog(LoginFream.bWindow, "游戏已经开始了,请先完成本局游戏才可以邀请对方哦~");
+										return;
+									}
 									JSONObject send = new JSONObject();
 									send.put("fromUserName",BeginWindow.userPlayer.getUserName());
 									send.put("toNickName",nickname);
