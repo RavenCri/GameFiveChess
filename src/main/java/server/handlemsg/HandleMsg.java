@@ -74,7 +74,7 @@ public class HandleMsg implements Runnable{
 				JSONObject msgJson;
 				try {
 					msgJson = JSONObject.parseObject(resMsg);
-					System.out.println(msgJson);
+					System.out.println("收到："+msgJson);
 					if(msgJson == null || msgJson.equals("{}")) {
 						LingoutChessBordRoom();
 						break;
@@ -484,6 +484,7 @@ public class HandleMsg implements Runnable{
 		try {
 			usersBuffer.getWriterPlayer().write(sendJSON.toJSONString()+"\r\n");
 			usersBuffer.getWriterPlayer().flush();
+			System.out.println("发送："+sendJSON.toJSONString());
 		} catch (Exception e) {
 			System.err.println("发送消息异常");
 			e.printStackTrace();

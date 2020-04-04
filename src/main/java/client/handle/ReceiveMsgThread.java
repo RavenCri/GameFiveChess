@@ -62,7 +62,7 @@ public class ReceiveMsgThread extends Thread{
 				
 				return msgJson;
 			}else {
-				System.out.println("消息验证错误");
+				System.err.println("消息验证错误=>"+msgJson);
 			}
 		} catch (IOException e) {
 			if(LoginFream.room !=null) {

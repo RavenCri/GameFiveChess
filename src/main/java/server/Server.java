@@ -5,7 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -26,7 +28,11 @@ import server.service.UserServer;
 @SpringBootApplication
 public class Server implements Runnable{
 	static ServerSocket serverSocket;
-	static ExecutorService pool= Executors.newFixedThreadPool(50);
+	final static ThreadFactory threadFactory = new ThreadFactoryBuilder()
+			.setNameFormat("ClientThread-%d")
+			.setDaemon(true)
+			.build();
+	static ExecutorService pool= Executors.newFixedThreadPool(50,threadFactory);
 	private static DefaultListableBeanFactory beanFactory;
 	@Autowired
 	public static UserServer userServer;
