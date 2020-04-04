@@ -92,23 +92,25 @@
                 <include>**/*</include>
                 </includes>
             </resource>
+            <!--
+            服务端用不到三方jar包，应该过滤掉。而不是添加进去
+            带来的新的问题。为什么过滤后，打包的客户端没有三方jar包照样正常运行？？
+            或许跟编译器编译有关系？之前是myeclipse。
+            -->
+         <!--  <resource>
+               <directory>${project.basedir}/lib</directory>
+
+               <excludes>
+                   <exclude>*.jar</exclude>
+               </excludes>
+           </resource>-->
             <resource>
-                <directory>${project.basedir}/lib</directory>
-                <!--服务端用不到三方jar包，应该过滤掉。而不是添加进去-->
-                <!--带来的新的问题。为什么过滤后，打包的客户端没有jar包照样正常运行？？
-                        或许跟编译器编译有关系？之前是myeclipse。
-                   -->
-                <excludes>
-                    <exclude>*.jar</exclude>
-                </excludes>
-            </resource>
-            <!--<resource>
                 <directory>${project.basedir}/lib</directory>
                 <targetPath>BOOT-INF/lib/</targetPath>
                 <includes>
                     <include>**/*.jar</include>
                 </includes>
-            </resource>-->
+            </resource>
 		</resources>
 
 
