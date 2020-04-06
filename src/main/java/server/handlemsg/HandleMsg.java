@@ -91,6 +91,8 @@ public class HandleMsg implements Runnable{
 				//消息验证
 				if(!DigestUtils.md5DigestAsHex((msgType +msgData).getBytes()).equals(securityCheck)) {
 					System.out.println("消息安全机制验证失败！");
+					System.out.println("接收到的消息："+msgData);
+					System.err.println("生成token:"+DigestUtils.md5DigestAsHex((msgType +msgData).getBytes())+"。\n传来token:=>"+securityCheck);
 					break;	
 				}	
 				if(!OnlineManage.onlineUsers.contains(gameRoom.getUserBuffer1())) {	
@@ -485,6 +487,7 @@ public class HandleMsg implements Runnable{
 			usersBuffer.getWriterPlayer().write(sendJSON.toJSONString()+"\r\n");
 			usersBuffer.getWriterPlayer().flush();
 			System.out.println("发送："+sendJSON.toJSONString());
+			System.out.println("发送消息："+msg);
 		} catch (Exception e) {
 			System.err.println("发送消息异常");
 			e.printStackTrace();

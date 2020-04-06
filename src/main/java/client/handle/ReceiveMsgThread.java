@@ -62,7 +62,9 @@ public class ReceiveMsgThread extends Thread{
 				
 				return msgJson;
 			}else {
-				System.err.println("消息验证错误=>"+msgJson);
+				System.out.println("消息安全机制验证失败！");
+				System.out.println("接收到的消息："+msgData);
+				System.err.println("生成token:"+DigestUtils.md5DigestAsHex((msgType +msgData).getBytes())+"。\n传来token:=>"+securityCheck);
 			}
 		} catch (IOException e) {
 			if(LoginFream.room !=null) {
